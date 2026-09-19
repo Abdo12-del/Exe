@@ -1,0 +1,8 @@
+# كل ما في dist عدا الملف التنفيذي النهائي
+dist/*
+!dist/taseer.exe
+
+# ملفات مؤقتة
+*.o
+*.obj
+taseer_data.json
