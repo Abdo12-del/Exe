@@ -77,7 +77,7 @@
       "category": "dairy",
       "buyPrice": 95,
       "sellPrice": 125,
-      "stock": 4,
+      "stock": 54,
       "minStock": 15
     },
     {
@@ -321,5 +321,100 @@
     "isOpen": true,
     "openedAt": "2026-09-20 08:00",
     "openingFloat": 10000
-  }
+  },
+  "suppliers": [
+    {
+      "id": 1,
+      "name": "مجمع سيفيتال للصناعات الغذائية",
+      "company": "Cevital Agro",
+      "phone": "034 21 22 23",
+      "address": "المنطقة الصناعية، بجاية",
+      "debt": 45000,
+      "notes": "توريد الزيوت والمواد الغذائية الأساسية"
+    },
+    {
+      "id": 2,
+      "name": "ملبنة وادي الصومام",
+      "company": "Laiterie Soummam",
+      "phone": "034 35 11 22",
+      "address": "أقبو، بجاية",
+      "debt": 23250,
+      "notes": "توريد الحليب والألبان والأجبان مرتين أسبوعياً"
+    },
+    {
+      "id": 3,
+      "name": "مؤسسة النور لتوزيع الجملة",
+      "company": "EURL Ennour Distribution",
+      "phone": "031 92 44 55",
+      "address": "المنطقة الصناعية، الخروب - قسنطينة",
+      "debt": 0,
+      "notes": "توريد مختلف المواد الغذائية - دفع فوري"
+    },
+    {
+      "id": 4,
+      "name": "شركة الرويبة للمشروبات والعصائر",
+      "company": "NCA Rouiba",
+      "phone": "021 81 12 34",
+      "address": "المنطقة الصناعية، الرويبة - الجزائر",
+      "debt": 12000,
+      "notes": "عصائر ومشروبات طبيعية معلبة"
+    }
+  ],
+  "supplierPayments": [
+    {
+      "id": 1,
+      "supplierId": 1,
+      "supplierName": "مجمع سيفيتال للصناعات الغذائية",
+      "amount": 15000,
+      "dateStr": "2026-09-18 14:00",
+      "note": "دفعة نقدية موثقة بوصل"
+    }
+  ],
+  "purchases": [
+    {
+      "id": 502,
+      "invoiceNumber": "ACH-2026-0503",
+      "dateStr": "2026-09-20 06:23",
+      "supplierId": 2,
+      "supplierName": "ملبنة وادي الصومام",
+      "items": [
+        {
+          "productId": 4,
+          "name": "حليب معقم كامل الدسم 1 لتر",
+          "quantity": 50,
+          "buyPrice": 95,
+          "total": 4750
+        }
+      ],
+      "total": 4750,
+      "paidAmount": 0,
+      "debtAmount": 4750,
+      "paymentMethod": "credit",
+      "notes": ""
+    },
+    {
+      "id": 501,
+      "invoiceNumber": "ACH-2026-0001",
+      "dateStr": "2026-09-18 10:00",
+      "supplierId": 1,
+      "supplierName": "مجمع سيفيتال للصناعات الغذائية",
+      "items": [
+        {
+          "productId": 1,
+          "name": "زيت زيتون بكر ممتاز 1 لتر",
+          "quantity": 30,
+          "buyPrice": 900,
+          "total": 27000
+        }
+      ],
+      "total": 27000,
+      "paidAmount": 15000,
+      "debtAmount": 12000,
+      "paymentMethod": "partial",
+      "notes": "سند استلام بضاعة رقم BL-492"
+    }
+  ],
+  "nextSupplierId": 5,
+  "nextPurchaseId": 503,
+  "nextSupplierPaymentId": 2
 }

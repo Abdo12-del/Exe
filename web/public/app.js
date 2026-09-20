@@ -5,6 +5,8 @@ let state = {
   categories: [],
   products: [],
   customers: [],
+  suppliers: [],
+  purchases: [],
   cart: [],
   activeCategory: 'all',
   currentTab: 'pos',
@@ -46,27 +48,11 @@ const elements = {
   btnCheckout: document.getElementById('btnCheckout'),
   btnClearCart: document.getElementById('btnClearCart'),
 
-  // Inventory
-  inventoryTableBody: document.getElementById('inventoryTableBody'),
-  invSearchInput: document.getElementById('invSearchInput'),
-  invCategoryFilter: document.getElementById('invCategoryFilter'),
-  btnFilterLowStock: document.getElementById('btnFilterLowStock'),
-  btnOpenAddProduct: document.getElementById('btnOpenAddProduct'),
-
-  // Product Modal
-  productModal: document.getElementById('productModal'),
-  productModalTitle: document.getElementById('productModalTitle'),
-  productForm: document.getElementById('productForm'),
-  btnCloseProductModal: document.getElementById('btnCloseProductModal'),
-  btnCancelProductModal: document.getElementById('btnCancelProductModal'),
-  prodId: document.getElementById('prodId'),
-  prodName: document.getElementById('prodName'),
-  prodBarcode: document.getElementById('prodBarcode'),
-  prodCategory: document.getElementById('prodCategory'),
-  prodBuyPrice: document.getElementById('prodBuyPrice'),
-  prodSellPrice: document.getElementById('prodSellPrice'),
-  prodStock: document.getElementById('prodStock'),
-  prodMinStock: document.getElementById('prodMinStock'),
+  // Sales History
+  salesTableBody: document.getElementById('salesTableBody'),
+  salesSearchInput: document.getElementById('salesSearchInput'),
+  salesDateFilter: document.getElementById('salesDateFilter'),
+  btnResetSalesFilter: document.getElementById('btnResetSalesFilter'),
 
   // Customers & Debts
   customersTableBody: document.getElementById('customersTableBody'),
@@ -109,23 +95,99 @@ const elements = {
   stmtCustDebt: document.getElementById('stmtCustDebt'),
   stmtHistoryBody: document.getElementById('stmtHistoryBody'),
 
+  // Suppliers & Purchases
+  suppliersTableBody: document.getElementById('suppliersTableBody'),
+  purchasesTableBody: document.getElementById('purchasesTableBody'),
+  suppSearchInput: document.getElementById('suppSearchInput'),
+  btnFilterSuppWithDebt: document.getElementById('btnFilterSuppWithDebt'),
+  btnOpenAddSupplier: document.getElementById('btnOpenAddSupplier'),
+  btnOpenNewPurchase: document.getElementById('btnOpenNewPurchase'),
+  kpiTotalSuppDebts: document.getElementById('kpiTotalSuppDebts'),
+  kpiSuppliersCount: document.getElementById('kpiSuppliersCount'),
+  kpiCreditorSuppliersCount: document.getElementById('kpiCreditorSuppliersCount'),
+
+  // Supplier Modal
+  supplierModal: document.getElementById('supplierModal'),
+  supplierModalTitle: document.getElementById('supplierModalTitle'),
+  supplierForm: document.getElementById('supplierForm'),
+  btnCloseSupplierModal: document.getElementById('btnCloseSupplierModal'),
+  btnCancelSupplierModal: document.getElementById('btnCancelSupplierModal'),
+  suppId: document.getElementById('suppId'),
+  suppName: document.getElementById('suppName'),
+  suppCompany: document.getElementById('suppCompany'),
+  suppPhone: document.getElementById('suppPhone'),
+  suppAddress: document.getElementById('suppAddress'),
+  suppDebt: document.getElementById('suppDebt'),
+  suppNotes: document.getElementById('suppNotes'),
+
+  // Supplier Repay Modal
+  suppRepayModal: document.getElementById('suppRepayModal'),
+  btnCloseSuppRepayModal: document.getElementById('btnCloseSuppRepayModal'),
+  btnCancelSuppRepayModal: document.getElementById('btnCancelSuppRepayModal'),
+  suppRepayForm: document.getElementById('suppRepayForm'),
+  suppRepayId: document.getElementById('suppRepayId'),
+  suppRepayName: document.getElementById('suppRepayName'),
+  suppRepayCurrentDebt: document.getElementById('suppRepayCurrentDebt'),
+  suppRepayAmount: document.getElementById('suppRepayAmount'),
+  suppRepayNote: document.getElementById('suppRepayNote'),
+
+  // Supplier Statement Modal
+  suppStatementModal: document.getElementById('suppStatementModal'),
+  btnCloseSuppStatementModal: document.getElementById('btnCloseSuppStatementModal'),
+  btnCloseSuppStmtBtn: document.getElementById('btnCloseSuppStmtBtn'),
+  suppStmtName: document.getElementById('suppStmtName'),
+  suppStmtCompany: document.getElementById('suppStmtCompany'),
+  suppStmtDebt: document.getElementById('suppStmtDebt'),
+  suppStmtHistoryBody: document.getElementById('suppStmtHistoryBody'),
+
+  // Purchase Modal
+  purchaseModal: document.getElementById('purchaseModal'),
+  btnClosePurchaseModal: document.getElementById('btnClosePurchaseModal'),
+  btnCancelPurchaseModal: document.getElementById('btnCancelPurchaseModal'),
+  purchaseForm: document.getElementById('purchaseForm'),
+  purchSupplierSelect: document.getElementById('purchSupplierSelect'),
+  purchPaymentMethod: document.getElementById('purchPaymentMethod'),
+  purchProductSelect: document.getElementById('purchProductSelect'),
+  purchQty: document.getElementById('purchQty'),
+  purchUnitPrice: document.getElementById('purchUnitPrice'),
+  purchItemTotal: document.getElementById('purchItemTotal'),
+  purchPaidAmount: document.getElementById('purchPaidAmount'),
+  purchNotes: document.getElementById('purchNotes'),
+
+  // Inventory
+  inventoryTableBody: document.getElementById('inventoryTableBody'),
+  invSearchInput: document.getElementById('invSearchInput'),
+  invCategoryFilter: document.getElementById('invCategoryFilter'),
+  btnFilterLowStock: document.getElementById('btnFilterLowStock'),
+  btnOpenAddProduct: document.getElementById('btnOpenAddProduct'),
+
+  // Product Modal
+  productModal: document.getElementById('productModal'),
+  productModalTitle: document.getElementById('productModalTitle'),
+  productForm: document.getElementById('productForm'),
+  btnCloseProductModal: document.getElementById('btnCloseProductModal'),
+  btnCancelProductModal: document.getElementById('btnCancelProductModal'),
+  prodId: document.getElementById('prodId'),
+  prodName: document.getElementById('prodName'),
+  prodBarcode: document.getElementById('prodBarcode'),
+  prodCategory: document.getElementById('prodCategory'),
+  prodBuyPrice: document.getElementById('prodBuyPrice'),
+  prodSellPrice: document.getElementById('prodSellPrice'),
+  prodStock: document.getElementById('prodStock'),
+  prodMinStock: document.getElementById('prodMinStock'),
+
   // Register Tab
   regTodayDate: document.getElementById('regTodayDate'),
   regOpeningFloat: document.getElementById('regOpeningFloat'),
   regCashSales: document.getElementById('regCashSales'),
   regDebtCollections: document.getElementById('regDebtCollections'),
+  regSupplierPaid: document.getElementById('regSupplierPaid'),
   regCreditSales: document.getElementById('regCreditSales'),
   regExpectedCash: document.getElementById('regExpectedCash'),
   regInvoicesCount: document.getElementById('regInvoicesCount'),
   regTodayProfit: document.getElementById('regTodayProfit'),
   btnRefreshRegister: document.getElementById('btnRefreshRegister'),
   btnPrintZReport: document.getElementById('btnPrintZReport'),
-
-  // Sales History
-  salesTableBody: document.getElementById('salesTableBody'),
-  salesSearchInput: document.getElementById('salesSearchInput'),
-  salesDateFilter: document.getElementById('salesDateFilter'),
-  btnResetSalesFilter: document.getElementById('btnResetSalesFilter'),
 
   // Stats
   kpiTodaySales: document.getElementById('kpiTodaySales'),
@@ -252,12 +314,15 @@ function switchTab(tabId) {
   if (tabId === 'pos') {
     elements.posSearchInput.focus();
     renderPosCatalog();
-  } else if (tabId === 'products') {
-    loadProducts();
-  } else if (tabId === 'customers') {
-    loadCustomers();
   } else if (tabId === 'sales') {
     loadSales();
+  } else if (tabId === 'customers') {
+    loadCustomers();
+  } else if (tabId === 'suppliers') {
+    loadSuppliers();
+    loadPurchases();
+  } else if (tabId === 'products') {
+    loadProducts();
   } else if (tabId === 'register') {
     loadRegister();
   } else if (tabId === 'stats') {
@@ -288,19 +353,22 @@ async function fetchAPI(url, options = {}) {
 // Initial Data Load
 async function initApp() {
   try {
-    const [settings, categories, customers] = await Promise.all([
+    const [settings, categories, customers, suppliers] = await Promise.all([
       fetchAPI('/api/settings'),
       fetchAPI('/api/categories'),
-      fetchAPI('/api/customers')
+      fetchAPI('/api/customers'),
+      fetchAPI('/api/suppliers')
     ]);
     state.settings = settings;
     state.categories = categories;
     state.customers = customers;
+    state.suppliers = suppliers;
 
     elements.headerStoreName.textContent = settings.storeName || 'متجر النور للمبيعات والتوزيع';
     renderCategoryPills();
     populateCategorySelects();
     populateCustomerSelects();
+    populateSupplierSelects();
     await loadProducts();
   } catch (err) {
     console.error("Initialization error:", err);
@@ -339,12 +407,34 @@ function populateCustomerSelects() {
   `).join('');
 }
 
+function populateSupplierSelects() {
+  elements.purchSupplierSelect.innerHTML = state.suppliers.map(s => `
+    <option value="${s.id}">
+      ${s.name} ${s.company ? `(${s.company})` : ''} ${s.debt > 0 ? `[دين علينا: ${formatMoney(s.debt)}]` : ''}
+    </option>
+  `).join('');
+}
+
+function populatePurchaseProductSelects() {
+  elements.purchProductSelect.innerHTML = state.products.map(p => `
+    <option value="${p.id}" data-buy="${p.buyPrice}">
+      ${p.name} (المخزون الحالي: ${p.stock} | تكلفة الشراء السابقة: ${formatMoney(p.buyPrice)})
+    </option>
+  `).join('');
+
+  if (state.products.length > 0) {
+    elements.purchUnitPrice.value = state.products[0].buyPrice;
+    calculatePurchaseTotal();
+  }
+}
+
 // Load Products
 async function loadProducts() {
   try {
     const products = await fetchAPI('/api/products');
     state.products = products;
     renderPosCatalog();
+    populatePurchaseProductSelects();
     if (state.currentTab === 'products') {
       renderInventoryTable();
     }
@@ -452,10 +542,7 @@ function addToCart(productId) {
     }
     existing.quantity += 1;
   } else {
-    state.cart.push({
-      product,
-      quantity: 1
-    });
+    state.cart.push({ product, quantity: 1 });
   }
 
   renderCart();
@@ -492,7 +579,6 @@ elements.btnClearCart.addEventListener('click', () => {
   }
 });
 
-// Payment method selector changed
 elements.posPaymentMethod.addEventListener('change', () => {
   const method = elements.posPaymentMethod.value;
   if (method === 'credit') {
@@ -590,7 +676,6 @@ function calculateCheckoutTotals(subtotal) {
     elements.cartDebtRow.style.display = 'flex';
     elements.cartDebtAmount.textContent = formatMoney(debt);
   } else {
-    // cash
     if (paid > total) {
       change = paid - total;
       debt = 0;
@@ -756,7 +841,6 @@ function showReceiptModal(sale) {
     elements.a4DebtRow.style.display = 'none';
   }
 
-  // Default to Thermal
   setReceiptView('thermal');
   elements.receiptModal.classList.add('active');
 }
@@ -781,179 +865,84 @@ elements.btnCloseReceiptModal.addEventListener('click', () => elements.receiptMo
 elements.btnDoneReceipt.addEventListener('click', () => elements.receiptModal.classList.remove('active'));
 elements.btnPrintReceipt.addEventListener('click', () => window.print());
 
-// INVENTORY MANAGEMENT TAB
-function renderInventoryTable() {
-  const query = elements.invSearchInput.value.trim().toLowerCase();
-  const cat = elements.invCategoryFilter.value;
-  let list = state.products;
+// ----------------- SALES HISTORY TAB -----------------
 
-  if (cat !== 'all') {
-    list = list.filter(p => p.category === cat);
-  }
-  if (query) {
-    list = list.filter(p => 
-      p.name.toLowerCase().includes(query) || 
-      (p.barcode && p.barcode.toLowerCase().includes(query))
-    );
-  }
+async function loadSales() {
+  try {
+    const query = elements.salesSearchInput.value.trim();
+    const date = elements.salesDateFilter.value;
+    let url = '/api/sales?';
+    if (query) url += `q=${encodeURIComponent(query)}&`;
+    if (date) url += `date=${encodeURIComponent(date)}&`;
 
-  if (list.length === 0) {
-    elements.inventoryTableBody.innerHTML = `
+    const sales = await fetchAPI(url);
+    state.sales = sales;
+    renderSalesTable();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function renderSalesTable() {
+  if (state.sales.length === 0) {
+    elements.salesTableBody.innerHTML = `
       <tr>
-        <td colspan="9" style="text-align: center; padding: 2rem; color: var(--text-muted);">
-          لا توجد منتجات مطابقة للبحث
+        <td colspan="10" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+          لا توجد فواتير مبيعات مسجلة
         </td>
       </tr>
     `;
     return;
   }
 
-  const categoryNames = {
-    food: "مواد غذائية",
-    drinks: "مشروبات وعصائر",
-    dairy: "ألبان وأجبان",
-    sweets: "حلويات وبسكويت",
-    cleaning: "منظفات ومستلزمات"
-  };
-
-  elements.inventoryTableBody.innerHTML = list.map(p => {
-    const profitMargin = p.sellPrice - p.buyPrice;
-    const profitPercent = p.buyPrice > 0 ? Math.round((profitMargin / p.buyPrice) * 100) : 0;
-    const isOut = p.stock <= 0;
-    const isLow = p.stock <= (p.minStock || 5) && !isOut;
+  elements.salesTableBody.innerHTML = state.sales.map(s => {
+    const totalItems = s.items.reduce((acc, it) => acc + it.quantity, 0);
+    const methodNames = {
+      cash: 'نقداً',
+      credit: 'دين بالكامل',
+      partial: 'دفع جزئي'
+    };
 
     return `
       <tr>
-        <td style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">${p.barcode || '—'}</td>
-        <td style="font-weight: 600;">${p.name}</td>
-        <td><span class="badge badge-info">${categoryNames[p.category] || p.category}</span></td>
-        <td>${formatMoney(p.buyPrice)}</td>
-        <td style="font-weight: 700; color: var(--primary);">${formatMoney(p.sellPrice)}</td>
-        <td style="color: var(--secondary); font-size: 0.85rem;">+${profitMargin} (${profitPercent}%)</td>
-        <td style="font-weight: 700; font-size: 1rem;">${p.stock}</td>
-        <td>
-          ${isOut ? '<span class="badge badge-danger">نفد المخزون</span>' : ''}
-          ${isLow ? '<span class="badge badge-warning">مخزون منخفض</span>' : ''}
-          ${!isOut && !isLow ? '<span class="badge badge-success">متوفر</span>' : ''}
+        <td style="font-family: monospace; font-weight: 700; color: var(--primary-dark);">${s.invoiceNumber}</td>
+        <td style="font-size: 0.85rem; color: var(--text-muted);">${s.dateStr}</td>
+        <td style="font-weight: 600;">${s.customerName || 'زبون عابر'}</td>
+        <td style="text-align: center;">${totalItems} مواد</td>
+        <td>${formatMoney(s.subtotal)}</td>
+        <td style="color: var(--primary); font-weight: 700;">${formatMoney(s.paidAmount)}</td>
+        <td style="color: ${s.debtAmount > 0 ? 'var(--danger)' : 'var(--text-muted)'}; font-weight: 700;">
+          ${s.debtAmount > 0 ? formatMoney(s.debtAmount) : '—'}
         </td>
+        <td style="color: var(--secondary); font-weight: 600;">+${formatMoney(s.profit)}</td>
+        <td><span class="badge ${s.paymentMethod === 'cash' ? 'badge-success' : 'badge-warning'}">${methodNames[s.paymentMethod] || s.paymentMethod}</span></td>
         <td>
-          <div style="display: flex; gap: 0.4rem;">
-            <button class="btn btn-secondary btn-edit-prod" data-id="${p.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">تعديل</button>
-            <button class="btn btn-danger btn-del-prod" data-id="${p.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">حذف</button>
-          </div>
+          <button class="btn btn-secondary btn-view-sale" data-id="${s.id}" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+            معاينة
+          </button>
         </td>
       </tr>
     `;
   }).join('');
 
-  elements.inventoryTableBody.querySelectorAll('.btn-edit-prod').forEach(b => {
-    b.addEventListener('click', () => openEditProductModal(parseInt(b.dataset.id, 10)));
+  elements.salesTableBody.querySelectorAll('.btn-view-sale').forEach(b => {
+    b.addEventListener('click', () => {
+      const id = parseInt(b.dataset.id, 10);
+      const sale = state.sales.find(s => s.id === id);
+      if (sale) showReceiptModal(sale);
+    });
   });
-  elements.inventoryTableBody.querySelectorAll('.btn-del-prod').forEach(b => {
-    b.addEventListener('click', () => deleteProduct(parseInt(b.dataset.id, 10)));
-  });
 }
 
-elements.invSearchInput.addEventListener('input', renderInventoryTable);
-elements.invCategoryFilter.addEventListener('change', renderInventoryTable);
-
-let lowStockFilterActive = false;
-elements.btnFilterLowStock.addEventListener('click', () => {
-  lowStockFilterActive = !lowStockFilterActive;
-  elements.btnFilterLowStock.classList.toggle('btn-primary', lowStockFilterActive);
-  elements.btnFilterLowStock.classList.toggle('btn-secondary', !lowStockFilterActive);
-  if (lowStockFilterActive) {
-    state.products = state.products.filter(p => p.stock <= (p.minStock || 5));
-  } else {
-    loadProducts();
-  }
-  renderInventoryTable();
+elements.salesSearchInput.addEventListener('input', loadSales);
+elements.salesDateFilter.addEventListener('change', loadSales);
+elements.btnResetSalesFilter.addEventListener('click', () => {
+  elements.salesSearchInput.value = '';
+  elements.salesDateFilter.value = '';
+  loadSales();
 });
 
-// Product Add/Edit Modal
-elements.btnOpenAddProduct.addEventListener('click', () => {
-  elements.productModalTitle.textContent = "إضافة منتج جديد";
-  elements.prodId.value = "";
-  elements.productForm.reset();
-  elements.prodMinStock.value = "5";
-  elements.productModal.classList.add('active');
-  elements.prodName.focus();
-});
-
-function openEditProductModal(productId) {
-  const p = state.products.find(x => x.id === productId);
-  if (!p) return;
-
-  elements.productModalTitle.textContent = "تعديل بيانات المنتج";
-  elements.prodId.value = p.id;
-  elements.prodName.value = p.name;
-  elements.prodBarcode.value = p.barcode || "";
-  elements.prodCategory.value = p.category || "food";
-  elements.prodBuyPrice.value = p.buyPrice;
-  elements.prodSellPrice.value = p.sellPrice;
-  elements.prodStock.value = p.stock;
-  elements.prodMinStock.value = p.minStock || 5;
-
-  elements.productModal.classList.add('active');
-  elements.prodName.focus();
-}
-
-function closeProductModal() {
-  elements.productModal.classList.remove('active');
-}
-elements.btnCloseProductModal.addEventListener('click', closeProductModal);
-elements.btnCancelProductModal.addEventListener('click', closeProductModal);
-
-elements.productForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const id = elements.prodId.value;
-  const payload = {
-    name: elements.prodName.value.trim(),
-    barcode: elements.prodBarcode.value.trim(),
-    category: elements.prodCategory.value,
-    buyPrice: Number(elements.prodBuyPrice.value),
-    sellPrice: Number(elements.prodSellPrice.value),
-    stock: Number(elements.prodStock.value),
-    minStock: Number(elements.prodMinStock.value)
-  };
-
-  try {
-    if (id) {
-      await fetchAPI(`/api/products/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(payload)
-      });
-      showToast("تم تحديث المنتج بنجاح");
-    } else {
-      await fetchAPI('/api/products', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-      showToast("تمت إضافة المنتج بنجاح");
-    }
-    closeProductModal();
-    await loadProducts();
-  } catch (err) {
-    console.error(err);
-  }
-});
-
-async function deleteProduct(productId) {
-  const p = state.products.find(x => x.id === productId);
-  if (!p) return;
-
-  if (confirm(`هل أنت متأكد من حذف المنتج "${p.name}"؟`)) {
-    try {
-      await fetchAPI(`/api/products/${productId}`, { method: 'DELETE' });
-      showToast("تم حذف المنتج");
-      await loadProducts();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-}
-
-// ----------------- CUSTOMERS & DEBTS (الزبائن والكريدي) -----------------
+// ----------------- CUSTOMERS & DEBTS (قائمة الزبائن والكريدي) -----------------
 
 async function loadCustomers() {
   try {
@@ -1205,6 +1194,552 @@ async function openStatementModal(custId) {
 elements.btnCloseStatementModal.addEventListener('click', () => elements.statementModal.classList.remove('active'));
 elements.btnCloseStmtBtn.addEventListener('click', () => elements.statementModal.classList.remove('active'));
 
+// ----------------- SUPPLIERS & PURCHASES (الممونين والمشتريات) -----------------
+
+async function loadSuppliers() {
+  try {
+    const query = elements.suppSearchInput.value.trim();
+    let url = '/api/suppliers?';
+    if (query) url += `q=${encodeURIComponent(query)}&`;
+
+    const suppliers = await fetchAPI(url);
+    state.suppliers = suppliers;
+    populateSupplierSelects();
+    renderSuppliersTable();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+let filterSuppDebtActive = false;
+elements.btnFilterSuppWithDebt.addEventListener('click', () => {
+  filterSuppDebtActive = !filterSuppDebtActive;
+  elements.btnFilterSuppWithDebt.classList.toggle('btn-primary', filterSuppDebtActive);
+  elements.btnFilterSuppWithDebt.classList.toggle('btn-secondary', !filterSuppDebtActive);
+  renderSuppliersTable();
+});
+
+function renderSuppliersTable() {
+  let list = state.suppliers;
+  if (filterSuppDebtActive) {
+    list = list.filter(s => (s.debt || 0) > 0);
+  }
+
+  let totalDebt = 0;
+  let creditorCount = 0;
+
+  state.suppliers.forEach(s => {
+    if (s.debt > 0) {
+      totalDebt += s.debt;
+      creditorCount++;
+    }
+  });
+
+  elements.kpiTotalSuppDebts.textContent = formatMoney(totalDebt);
+  elements.kpiSuppliersCount.textContent = `${state.suppliers.length} ممونين`;
+  elements.kpiCreditorSuppliersCount.textContent = `${creditorCount} شركات دائنة`;
+
+  if (list.length === 0) {
+    elements.suppliersTableBody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+          لا يوجد ممونين مطابقين
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  elements.suppliersTableBody.innerHTML = list.map(s => `
+    <tr>
+      <td>${s.id}</td>
+      <td style="font-weight: 700;">${s.name}</td>
+      <td style="color: var(--secondary); font-weight: 600;">${s.company || '—'}</td>
+      <td style="font-family: monospace;">${s.phone || '—'}</td>
+      <td>${s.address || '—'}</td>
+      <td style="font-weight: 800; color: ${s.debt > 0 ? 'var(--danger)' : 'var(--primary)'}; font-size: 1.05rem;">
+        ${formatMoney(s.debt || 0)}
+      </td>
+      <td style="font-size: 0.85rem; color: var(--text-muted);">${s.notes || '—'}</td>
+      <td>
+        <div style="display: flex; gap: 0.4rem;">
+          ${s.debt > 0 ? `
+            <button class="btn btn-primary btn-repay-supp" data-id="${s.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+              تسديد دفعة
+            </button>
+          ` : ''}
+          <button class="btn btn-secondary btn-supp-stmt" data-id="${s.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+            كشف حساب
+          </button>
+          <button class="btn btn-secondary btn-edit-supp" data-id="${s.id}" style="padding: 0.3rem 0.5rem; font-size: 0.8rem;">
+            تعديل
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  elements.suppliersTableBody.querySelectorAll('.btn-repay-supp').forEach(b => {
+    b.addEventListener('click', () => openSuppRepayModal(parseInt(b.dataset.id, 10)));
+  });
+  elements.suppliersTableBody.querySelectorAll('.btn-supp-stmt').forEach(b => {
+    b.addEventListener('click', () => openSuppStatementModal(parseInt(b.dataset.id, 10)));
+  });
+  elements.suppliersTableBody.querySelectorAll('.btn-edit-supp').forEach(b => {
+    b.addEventListener('click', () => openEditSupplierModal(parseInt(b.dataset.id, 10)));
+  });
+}
+
+elements.suppSearchInput.addEventListener('input', loadSuppliers);
+
+// Add / Edit Supplier Modal
+elements.btnOpenAddSupplier.addEventListener('click', () => {
+  elements.supplierModalTitle.textContent = "إضافة ممون جديد";
+  elements.suppId.value = "";
+  elements.supplierForm.reset();
+  elements.suppDebt.value = "0";
+  elements.supplierModal.classList.add('active');
+  elements.suppName.focus();
+});
+
+function openEditSupplierModal(suppId) {
+  const s = state.suppliers.find(x => x.id === suppId);
+  if (!s) return;
+
+  elements.supplierModalTitle.textContent = "تعديل بيانات الممون";
+  elements.suppId.value = s.id;
+  elements.suppName.value = s.name;
+  elements.suppCompany.value = s.company || "";
+  elements.suppPhone.value = s.phone || "";
+  elements.suppAddress.value = s.address || "";
+  elements.suppDebt.value = s.debt || 0;
+  elements.suppNotes.value = s.notes || "";
+
+  elements.supplierModal.classList.add('active');
+}
+
+elements.btnCloseSupplierModal.addEventListener('click', () => elements.supplierModal.classList.remove('active'));
+elements.btnCancelSupplierModal.addEventListener('click', () => elements.supplierModal.classList.remove('active'));
+
+elements.supplierForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = elements.suppId.value;
+  const payload = {
+    name: elements.suppName.value.trim(),
+    company: elements.suppCompany.value.trim(),
+    phone: elements.suppPhone.value.trim(),
+    address: elements.suppAddress.value.trim(),
+    debt: Number(elements.suppDebt.value),
+    notes: elements.suppNotes.value.trim()
+  };
+
+  try {
+    if (id) {
+      await fetchAPI(`/api/suppliers/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+      });
+      showToast("تم تحديث بيانات الممون");
+    } else {
+      await fetchAPI('/api/suppliers', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      showToast("تمت إضافة الممون بنجاح");
+    }
+    elements.supplierModal.classList.remove('active');
+    await loadSuppliers();
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// Repay Supplier Modal
+function openSuppRepayModal(suppId) {
+  const s = state.suppliers.find(x => x.id === suppId);
+  if (!s) return;
+
+  elements.suppRepayId.value = s.id;
+  elements.suppRepayName.textContent = `${s.name} ${s.company ? `(${s.company})` : ''}`;
+  elements.suppRepayCurrentDebt.textContent = formatMoney(s.debt);
+  elements.suppRepayAmount.value = s.debt;
+  elements.suppRepayAmount.max = s.debt;
+  elements.suppRepayModal.classList.add('active');
+  elements.suppRepayAmount.focus();
+}
+
+elements.btnCloseSuppRepayModal.addEventListener('click', () => elements.suppRepayModal.classList.remove('active'));
+elements.btnCancelSuppRepayModal.addEventListener('click', () => elements.suppRepayModal.classList.remove('active'));
+
+elements.suppRepayForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = elements.suppRepayId.value;
+  const amount = Number(elements.suppRepayAmount.value);
+  const note = elements.suppRepayNote.value;
+
+  try {
+    await fetchAPI(`/api/suppliers/${id}/pay`, {
+      method: 'POST',
+      body: JSON.stringify({ amount, note })
+    });
+    showToast("✔ تم تسجيل تسديد الدفعة للممون بنجاح");
+    elements.suppRepayModal.classList.remove('active');
+    await loadSuppliers();
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// Supplier Statement Modal (كشف حساب الممون)
+async function openSuppStatementModal(suppId) {
+  try {
+    const res = await fetchAPI(`/api/suppliers/${suppId}/history`);
+    elements.suppStmtName.textContent = res.supplier.name;
+    elements.suppStmtCompany.textContent = res.supplier.company ? `الشركة: ${res.supplier.company}` : '';
+    elements.suppStmtDebt.textContent = formatMoney(res.supplier.debt);
+
+    const timeline = [];
+    (res.purchases || []).forEach(p => {
+      timeline.push({
+        date: p.dateStr,
+        desc: `فاتورة توريد وشراء (${p.invoiceNumber})`,
+        amount: p.total,
+        paid: p.paidAmount,
+        debt: p.debtAmount,
+        type: 'purchase'
+      });
+    });
+    (res.payments || []).forEach(pm => {
+      timeline.push({
+        date: pm.dateStr,
+        desc: `تسديد نقدي للممون: ${pm.note || ''}`,
+        amount: 0,
+        paid: pm.amount,
+        debt: -pm.amount,
+        type: 'payment'
+      });
+    });
+
+    timeline.sort((a, b) => b.date.localeCompare(a.date));
+
+    if (timeline.length === 0) {
+      elements.suppStmtHistoryBody.innerHTML = `
+        <tr><td colspan="5" style="text-align: center; padding: 1.5rem;">لا توجد حركات مسجلة لهذا الممون</td></tr>
+      `;
+    } else {
+      elements.suppStmtHistoryBody.innerHTML = timeline.map(t => `
+        <tr>
+          <td>${t.date}</td>
+          <td style="font-weight: 600;">${t.desc}</td>
+          <td>${t.amount ? formatMoney(t.amount) : '—'}</td>
+          <td style="color: var(--primary); font-weight: 700;">${formatMoney(t.paid)}</td>
+          <td style="color: ${t.debt > 0 ? 'var(--danger)' : 'var(--secondary)'}; font-weight: 700;">
+            ${t.debt > 0 ? '+' + formatMoney(t.debt) : (t.debt < 0 ? '-' + formatMoney(Math.abs(t.debt)) : '0')}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    elements.suppStatementModal.classList.add('active');
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+elements.btnCloseSuppStatementModal.addEventListener('click', () => elements.suppStatementModal.classList.remove('active'));
+elements.btnCloseSuppStmtBtn.addEventListener('click', () => elements.suppStatementModal.classList.remove('active'));
+
+// Purchases List & New Purchase Order
+async function loadPurchases() {
+  try {
+    const list = await fetchAPI('/api/purchases');
+    state.purchases = list;
+    renderPurchasesTable();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function renderPurchasesTable() {
+  if (state.purchases.length === 0) {
+    elements.purchasesTableBody.innerHTML = `
+      <tr><td colspan="9" style="text-align: center; padding: 1.5rem; color: var(--text-muted);">لا توجد فواتير شراء مسجلة</td></tr>
+    `;
+    return;
+  }
+
+  elements.purchasesTableBody.innerHTML = state.purchases.map(p => {
+    const itemsDesc = (p.items || []).map(i => `${i.name} × ${i.quantity}`).join('، ');
+    return `
+      <tr>
+        <td style="font-family: monospace; font-weight: 700; color: var(--secondary);">${p.invoiceNumber}</td>
+        <td style="font-size: 0.85rem; color: var(--text-muted);">${p.dateStr}</td>
+        <td style="font-weight: 700;">${p.supplierName}</td>
+        <td style="font-size: 0.85rem; max-width: 250px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${itemsDesc}</td>
+        <td style="font-weight: 700;">${formatMoney(p.total)}</td>
+        <td style="color: var(--primary); font-weight: 700;">${formatMoney(p.paidAmount)}</td>
+        <td style="color: ${p.debtAmount > 0 ? 'var(--danger)' : 'var(--text-muted)'}; font-weight: 700;">${p.debtAmount > 0 ? formatMoney(p.debtAmount) : '—'}</td>
+        <td><span class="badge ${p.paymentMethod === 'cash' ? 'badge-success' : 'badge-warning'}">${p.paymentMethod === 'cash' ? 'نقداً' : (p.paymentMethod === 'credit' ? 'دين' : 'جزئي')}</span></td>
+        <td style="font-size: 0.8rem; color: var(--text-muted);">${p.notes || '—'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// New Purchase Order Modal
+elements.btnOpenNewPurchase.addEventListener('click', () => {
+  populateSupplierSelects();
+  populatePurchaseProductSelects();
+  elements.purchQty.value = 10;
+  elements.purchPaidAmount.value = '';
+  elements.purchNotes.value = '';
+  calculatePurchaseTotal();
+  elements.purchaseModal.classList.add('active');
+});
+
+elements.btnClosePurchaseModal.addEventListener('click', () => elements.purchaseModal.classList.remove('active'));
+elements.btnCancelPurchaseModal.addEventListener('click', () => elements.purchaseModal.classList.remove('active'));
+
+function calculatePurchaseTotal() {
+  const qty = parseInt(elements.purchQty.value, 10) || 0;
+  const unitPrice = parseFloat(elements.purchUnitPrice.value) || 0;
+  const total = qty * unitPrice;
+  elements.purchItemTotal.textContent = formatMoney(total);
+  if (elements.purchPaymentMethod.value === 'cash') {
+    elements.purchPaidAmount.value = total;
+  }
+}
+
+elements.purchProductSelect.addEventListener('change', () => {
+  const selectedOpt = elements.purchProductSelect.options[elements.purchProductSelect.selectedIndex];
+  if (selectedOpt) {
+    elements.purchUnitPrice.value = selectedOpt.dataset.buy || 0;
+    calculatePurchaseTotal();
+  }
+});
+elements.purchQty.addEventListener('input', calculatePurchaseTotal);
+elements.purchUnitPrice.addEventListener('input', calculatePurchaseTotal);
+elements.purchPaymentMethod.addEventListener('change', () => {
+  const m = elements.purchPaymentMethod.value;
+  if (m === 'credit') {
+    elements.purchPaidAmount.value = 0;
+    elements.purchPaidAmount.disabled = true;
+  } else {
+    elements.purchPaidAmount.disabled = false;
+    calculatePurchaseTotal();
+  }
+});
+
+elements.purchaseForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const supplierId = parseInt(elements.purchSupplierSelect.value, 10);
+  const productId = parseInt(elements.purchProductSelect.value, 10);
+  const qty = parseInt(elements.purchQty.value, 10);
+  const unitBuy = parseFloat(elements.purchUnitPrice.value);
+  const method = elements.purchPaymentMethod.value;
+  const total = qty * unitBuy;
+  const paid = method === 'credit' ? 0 : (parseFloat(elements.purchPaidAmount.value) || 0);
+
+  const payload = {
+    supplierId,
+    paymentMethod: method,
+    paidAmount: paid,
+    notes: elements.purchNotes.value.trim(),
+    items: [
+      {
+        productId,
+        quantity: qty,
+        buyPrice: unitBuy
+      }
+    ]
+  };
+
+  try {
+    await fetchAPI('/api/purchases', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    showToast("✔ تم تسجيل فاتورة الشراء وزيادة كمية المخزون");
+    elements.purchaseModal.classList.remove('active');
+    await Promise.all([loadProducts(), loadSuppliers(), loadPurchases()]);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// ----------------- INVENTORY MANAGEMENT TAB -----------------
+
+function renderInventoryTable() {
+  const query = elements.invSearchInput.value.trim().toLowerCase();
+  const cat = elements.invCategoryFilter.value;
+  let list = state.products;
+
+  if (cat !== 'all') {
+    list = list.filter(p => p.category === cat);
+  }
+  if (query) {
+    list = list.filter(p => 
+      p.name.toLowerCase().includes(query) || 
+      (p.barcode && p.barcode.toLowerCase().includes(query))
+    );
+  }
+
+  if (list.length === 0) {
+    elements.inventoryTableBody.innerHTML = `
+      <tr>
+        <td colspan="9" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+          لا توجد منتجات مطابقة للبحث
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  const categoryNames = {
+    food: "مواد غذائية",
+    drinks: "مشروبات وعصائر",
+    dairy: "ألبان وأجبان",
+    sweets: "حلويات وبسكويت",
+    cleaning: "منظفات ومستلزمات"
+  };
+
+  elements.inventoryTableBody.innerHTML = list.map(p => {
+    const profitMargin = p.sellPrice - p.buyPrice;
+    const profitPercent = p.buyPrice > 0 ? Math.round((profitMargin / p.buyPrice) * 100) : 0;
+    const isOut = p.stock <= 0;
+    const isLow = p.stock <= (p.minStock || 5) && !isOut;
+
+    return `
+      <tr>
+        <td style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">${p.barcode || '—'}</td>
+        <td style="font-weight: 600;">${p.name}</td>
+        <td><span class="badge badge-info">${categoryNames[p.category] || p.category}</span></td>
+        <td>${formatMoney(p.buyPrice)}</td>
+        <td style="font-weight: 700; color: var(--primary);">${formatMoney(p.sellPrice)}</td>
+        <td style="color: var(--secondary); font-size: 0.85rem;">+${profitMargin} (${profitPercent}%)</td>
+        <td style="font-weight: 700; font-size: 1rem;">${p.stock}</td>
+        <td>
+          ${isOut ? '<span class="badge badge-danger">نفد المخزون</span>' : ''}
+          ${isLow ? '<span class="badge badge-warning">مخزون منخفض</span>' : ''}
+          ${!isOut && !isLow ? '<span class="badge badge-success">متوفر</span>' : ''}
+        </td>
+        <td>
+          <div style="display: flex; gap: 0.4rem;">
+            <button class="btn btn-secondary btn-edit-prod" data-id="${p.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">تعديل</button>
+            <button class="btn btn-danger btn-del-prod" data-id="${p.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">حذف</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  elements.inventoryTableBody.querySelectorAll('.btn-edit-prod').forEach(b => {
+    b.addEventListener('click', () => openEditProductModal(parseInt(b.dataset.id, 10)));
+  });
+  elements.inventoryTableBody.querySelectorAll('.btn-del-prod').forEach(b => {
+    b.addEventListener('click', () => deleteProduct(parseInt(b.dataset.id, 10)));
+  });
+}
+
+elements.invSearchInput.addEventListener('input', renderInventoryTable);
+elements.invCategoryFilter.addEventListener('change', renderInventoryTable);
+
+let lowStockFilterActive = false;
+elements.btnFilterLowStock.addEventListener('click', () => {
+  lowStockFilterActive = !lowStockFilterActive;
+  elements.btnFilterLowStock.classList.toggle('btn-primary', lowStockFilterActive);
+  elements.btnFilterLowStock.classList.toggle('btn-secondary', !lowStockFilterActive);
+  if (lowStockFilterActive) {
+    state.products = state.products.filter(p => p.stock <= (p.minStock || 5));
+  } else {
+    loadProducts();
+  }
+  renderInventoryTable();
+});
+
+// Product Add/Edit Modal
+elements.btnOpenAddProduct.addEventListener('click', () => {
+  elements.productModalTitle.textContent = "إضافة منتج جديد";
+  elements.prodId.value = "";
+  elements.productForm.reset();
+  elements.prodMinStock.value = "5";
+  elements.productModal.classList.add('active');
+  elements.prodName.focus();
+});
+
+function openEditProductModal(productId) {
+  const p = state.products.find(x => x.id === productId);
+  if (!p) return;
+
+  elements.productModalTitle.textContent = "تعديل بيانات المنتج";
+  elements.prodId.value = p.id;
+  elements.prodName.value = p.name;
+  elements.prodBarcode.value = p.barcode || "";
+  elements.prodCategory.value = p.category || "food";
+  elements.prodBuyPrice.value = p.buyPrice;
+  elements.prodSellPrice.value = p.sellPrice;
+  elements.prodStock.value = p.stock;
+  elements.prodMinStock.value = p.minStock || 5;
+
+  elements.productModal.classList.add('active');
+  elements.prodName.focus();
+}
+
+function closeProductModal() {
+  elements.productModal.classList.remove('active');
+}
+elements.btnCloseProductModal.addEventListener('click', closeProductModal);
+elements.btnCancelProductModal.addEventListener('click', closeProductModal);
+
+elements.productForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = elements.prodId.value;
+  const payload = {
+    name: elements.prodName.value.trim(),
+    barcode: elements.prodBarcode.value.trim(),
+    category: elements.prodCategory.value,
+    buyPrice: Number(elements.prodBuyPrice.value),
+    sellPrice: Number(elements.prodSellPrice.value),
+    stock: Number(elements.prodStock.value),
+    minStock: Number(elements.prodMinStock.value)
+  };
+
+  try {
+    if (id) {
+      await fetchAPI(`/api/products/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+      });
+      showToast("تم تحديث المنتج بنجاح");
+    } else {
+      await fetchAPI('/api/products', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      showToast("تمت إضافة المنتج بنجاح");
+    }
+    closeProductModal();
+    await loadProducts();
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+async function deleteProduct(productId) {
+  const p = state.products.find(x => x.id === productId);
+  if (!p) return;
+
+  if (confirm(`هل أنت متأكد من حذف المنتج "${p.name}"؟`)) {
+    try {
+      await fetchAPI(`/api/products/${productId}`, { method: 'DELETE' });
+      showToast("تم حذف المنتج");
+      await loadProducts();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
 // ----------------- REGISTER & CASH DRAWER (يومية الصندوق) -----------------
 
 async function loadRegister() {
@@ -1216,6 +1751,7 @@ async function loadRegister() {
     elements.regOpeningFloat.textContent = formatMoney(reg.openingFloat);
     elements.regCashSales.textContent = formatMoney(reg.cashSalesTotal);
     elements.regDebtCollections.textContent = formatMoney(reg.debtCollections);
+    elements.regSupplierPaid.textContent = `-${formatMoney(reg.supplierPaidCash || 0)}`;
     elements.regCreditSales.textContent = formatMoney(reg.creditSalesTotal);
     elements.regExpectedCash.textContent = formatMoney(reg.expectedCashInDrawer);
     elements.regInvoicesCount.textContent = `${reg.invoicesCount} فاتورة (و ${reg.paymentsCount} تسديد)`;
@@ -1241,12 +1777,13 @@ elements.btnPrintZReport.addEventListener('click', () => {
       <div style="padding: 10px 0; border-bottom: 1px dashed #000;">
         <div>الرصيد الافتتاحي: ${formatMoney(reg.openingFloat)}</div>
         <div>المبيعات النقدية: ${formatMoney(reg.cashSalesTotal)}</div>
-        <div>تحصيل ديون سابقة: ${formatMoney(reg.debtCollections)}</div>
-        <div style="font-weight: bold; margin-top: 6px;">إجمالي المقبوضات النقدية: ${formatMoney(reg.cashSalesTotal + reg.debtCollections)}</div>
-        <div style="margin-top: 4px; color: #666;">مبيعات بالآجل (ديون): ${formatMoney(reg.creditSalesTotal)}</div>
+        <div>تحصيل ديون الزبائن: ${formatMoney(reg.debtCollections)}</div>
+        <div>مدفوعات الممونين نقدية: -${formatMoney(reg.supplierPaidCash || 0)}</div>
+        <div style="font-weight: bold; margin-top: 6px;">إجمالي المقبوضات النقدية: ${formatMoney(reg.cashSalesTotal + reg.debtCollections - (reg.supplierPaidCash || 0))}</div>
+        <div style="margin-top: 4px; color: #666;">مبيعات بالآجل (ديون زبائن): ${formatMoney(reg.creditSalesTotal)}</div>
       </div>
       <div style="padding: 10px 0; border-bottom: 1px dashed #000; font-weight: bold; font-size: 14px;">
-        <div>النقد الواجب توفره: ${formatMoney(reg.expectedCashInDrawer)}</div>
+        <div>النقد الواجب توفره في الصندوق: ${formatMoney(reg.expectedCashInDrawer)}</div>
       </div>
       <div style="padding: 8px 0; font-size: 11px;">
         <div>عدد فواتير البيع: ${reg.invoicesCount}</div>
@@ -1263,83 +1800,6 @@ elements.btnPrintZReport.addEventListener('click', () => {
   win.document.close();
   win.focus();
   win.print();
-});
-
-// ----------------- SALES HISTORY TAB -----------------
-
-async function loadSales() {
-  try {
-    const query = elements.salesSearchInput.value.trim();
-    const date = elements.salesDateFilter.value;
-    let url = '/api/sales?';
-    if (query) url += `q=${encodeURIComponent(query)}&`;
-    if (date) url += `date=${encodeURIComponent(date)}&`;
-
-    const sales = await fetchAPI(url);
-    state.sales = sales;
-    renderSalesTable();
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-function renderSalesTable() {
-  if (state.sales.length === 0) {
-    elements.salesTableBody.innerHTML = `
-      <tr>
-        <td colspan="10" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
-          لا توجد فواتير مبيعات مسجلة
-        </td>
-      </tr>
-    `;
-    return;
-  }
-
-  elements.salesTableBody.innerHTML = state.sales.map(s => {
-    const totalItems = s.items.reduce((acc, it) => acc + it.quantity, 0);
-    const methodNames = {
-      cash: 'نقداً',
-      credit: 'دين بالكامل',
-      partial: 'دفع جزئي'
-    };
-
-    return `
-      <tr>
-        <td style="font-family: monospace; font-weight: 700; color: var(--primary-dark);">${s.invoiceNumber}</td>
-        <td style="font-size: 0.85rem; color: var(--text-muted);">${s.dateStr}</td>
-        <td style="font-weight: 600;">${s.customerName || 'زبون عابر'}</td>
-        <td style="text-align: center;">${totalItems} مواد</td>
-        <td>${formatMoney(s.subtotal)}</td>
-        <td style="color: var(--primary); font-weight: 700;">${formatMoney(s.paidAmount)}</td>
-        <td style="color: ${s.debtAmount > 0 ? 'var(--danger)' : 'var(--text-muted)'}; font-weight: 700;">
-          ${s.debtAmount > 0 ? formatMoney(s.debtAmount) : '—'}
-        </td>
-        <td style="color: var(--secondary); font-weight: 600;">+${formatMoney(s.profit)}</td>
-        <td><span class="badge ${s.paymentMethod === 'cash' ? 'badge-success' : 'badge-warning'}">${methodNames[s.paymentMethod] || s.paymentMethod}</span></td>
-        <td>
-          <button class="btn btn-secondary btn-view-sale" data-id="${s.id}" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
-            معاينة
-          </button>
-        </td>
-      </tr>
-    `;
-  }).join('');
-
-  elements.salesTableBody.querySelectorAll('.btn-view-sale').forEach(b => {
-    b.addEventListener('click', () => {
-      const id = parseInt(b.dataset.id, 10);
-      const sale = state.sales.find(s => s.id === id);
-      if (sale) showReceiptModal(sale);
-    });
-  });
-}
-
-elements.salesSearchInput.addEventListener('input', loadSales);
-elements.salesDateFilter.addEventListener('change', loadSales);
-elements.btnResetSalesFilter.addEventListener('click', () => {
-  elements.salesSearchInput.value = '';
-  elements.salesDateFilter.value = '';
-  loadSales();
 });
 
 // ----------------- STATS & DASHBOARD TAB -----------------
@@ -1494,7 +1954,7 @@ elements.importFileInput.addEventListener('change', async (e) => {
 });
 
 elements.btnResetDemoData.addEventListener('click', async () => {
-  if (confirm("هل تريد استعادة البيانات النموذجية الافتراضية؟ سيتم تحديث المنتجات والزبائن والفواتير.")) {
+  if (confirm("هل تريد استعادة البيانات النموذجية الافتراضية؟ سيتم تحديث المنتجات والزبائن والممونين.")) {
     try {
       await fetchAPI('/api/reset-demo', { method: 'POST' });
       showToast("✔ تمت استعادة البيانات النموذجية");

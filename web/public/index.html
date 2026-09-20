@@ -18,7 +18,7 @@
       </div>
       <div>
         <h1 class="brand-title" id="headerStoreName">متجر النور للمبيعات والتوزيع</h1>
-        <p class="brand-subtitle">نظام تسيير المبيعات ونقاط البيع الاحترافي (POS Pro)</p>
+        <p class="brand-subtitle">نظام تسيير المبيعات ونقاط البيع المتكامل (POS Pro)</p>
       </div>
     </div>
 
@@ -28,17 +28,21 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
         نقطة البيع (الكاشير)
       </button>
-      <button class="nav-tab" data-tab="products">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-        المخزون والمنتجات
+      <button class="nav-tab" data-tab="sales">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        سجل المبيعات
       </button>
       <button class="nav-tab" data-tab="customers">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        الزبائن والديون (الكريدي)
+        قائمة الزبائن (الكريدي)
       </button>
-      <button class="nav-tab" data-tab="sales">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        سجل الفواتير
+      <button class="nav-tab" data-tab="suppliers">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L17.5 7.5H14v9.5h2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+        الممونين (الموردين)
+      </button>
+      <button class="nav-tab" data-tab="products">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+        المخزون والمنتجات
       </button>
       <button class="nav-tab" data-tab="register">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
@@ -54,7 +58,7 @@
       </button>
     </nav>
 
-    <!-- Header Actions & Clock -->
+    <!-- Header Status & Clock -->
     <div class="header-status">
       <span class="live-badge">
         <span class="pulse-dot"></span>
@@ -172,31 +176,22 @@
     </section>
 
     <!-- ==============================================
-         TAB 2: PRODUCTS & INVENTORY
+         TAB 2: SALES HISTORY (سجل المبيعات)
     =============================================== -->
-    <section id="pane-products" class="tab-pane">
+    <section id="pane-sales" class="tab-pane">
       <div class="action-bar">
         <div>
-          <h2 class="action-bar-title">إدارة المنتجات والمخزون</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">تحكم في الأسعار والتكلفة والكميات وطباعة الباركود</p>
+          <h2 class="action-bar-title">سجل المبيعات والفواتير</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">أرشيف كامل للمبيعات مع الفلترة حسب التاريخ أو الزبون وتصدير Excel وطباعة الفواتير</p>
         </div>
         <div class="action-bar-tools">
-          <input type="text" id="invSearchInput" class="form-control" style="width: 220px;" placeholder="بحث باسم المنتج أو الباركود...">
-          <select id="invCategoryFilter" class="form-control" style="width: 150px;">
-            <option value="all">كل التصنيفات</option>
-          </select>
-          <button class="btn btn-secondary" id="btnFilterLowStock">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            تنبيه النقص
-          </button>
-          <a href="/api/export/products-csv" class="btn btn-secondary" download title="تصدير إلى Excel">
+          <input type="text" id="salesSearchInput" class="form-control" style="width: 220px;" placeholder="بحث برقم الفاتورة أو الزبون...">
+          <input type="date" id="salesDateFilter" class="form-control" style="width: 160px;">
+          <a href="/api/export/sales-csv" class="btn btn-secondary" download title="تصدير إلى ملف Excel">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            تصدير Excel
+            تصدير Excel (CSV)
           </a>
-          <button class="btn btn-primary" id="btnOpenAddProduct">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            إضافة منتج
-          </button>
+          <button class="btn btn-secondary" id="btnResetSalesFilter">إعادة ضبط</button>
         </div>
       </div>
 
@@ -205,18 +200,19 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>الباركود</th>
-                <th>اسم المنتج</th>
-                <th>التصنيف</th>
-                <th>سعر الشراء</th>
-                <th>سعر البيع</th>
-                <th>هامش الربح</th>
-                <th>المخزون</th>
-                <th>الحالة</th>
-                <th>إجراءات</th>
+                <th>رقم الفاتورة</th>
+                <th>التاريخ والوقت</th>
+                <th>الزبون</th>
+                <th>عدد المواد</th>
+                <th>المجموع</th>
+                <th>المدفوع</th>
+                <th>الدين</th>
+                <th>الربح الصافي</th>
+                <th>طريقة الدفع</th>
+                <th>معاينة</th>
               </tr>
             </thead>
-            <tbody id="inventoryTableBody">
+            <tbody id="salesTableBody">
               <!-- Dynamically populated -->
             </tbody>
           </table>
@@ -225,13 +221,13 @@
     </section>
 
     <!-- ==============================================
-         TAB 3: CUSTOMERS & CREDIT (الزبائن والكريدي)
+         TAB 3: CUSTOMERS & CREDIT (قائمة الزبائن والكريدي)
     =============================================== -->
     <section id="pane-customers" class="tab-pane">
       <div class="action-bar">
         <div>
-          <h2 class="action-bar-title">سجل الزبائن والديون (الكريدي)</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">إدارة حسابات الزبائن، متابعة المبيعات بالآجل، وتسجيل دفعات التسديد</p>
+          <h2 class="action-bar-title">قائمة الزبائن والديون (الكريدي)</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">إدارة حسابات الزبائن، متابعة المبيعات بالآجل، وتسجيل دفعات التسديد مع كشوفات الحساب</p>
         </div>
         <div class="action-bar-tools">
           <input type="text" id="custSearchInput" class="form-control" style="width: 240px;" placeholder="بحث باسم الزبون أو الهاتف...">
@@ -295,43 +291,108 @@
     </section>
 
     <!-- ==============================================
-         TAB 4: SALES HISTORY & INVOICES
+         TAB 4: SUPPLIERS & PURCHASES (الممونين والموردين)
     =============================================== -->
-    <section id="pane-sales" class="tab-pane">
+    <section id="pane-suppliers" class="tab-pane">
       <div class="action-bar">
         <div>
-          <h2 class="action-bar-title">سجل الفواتير والمبيعات</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">أرشيف كامل للمبيعات مع إمكانية الفلترة وتصدير Excel وطباعة الفاتورة</p>
+          <h2 class="action-bar-title">سجل الممونين وفواتير الشراء (Fournisseurs)</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">إدارة الموردين، متابعة ديون المشتريات المستحقة لهم، وتسجيل سندات الشراء والتسديدات</p>
         </div>
         <div class="action-bar-tools">
-          <input type="text" id="salesSearchInput" class="form-control" style="width: 220px;" placeholder="بحث برقم الفاتورة أو الزبون...">
-          <input type="date" id="salesDateFilter" class="form-control" style="width: 160px;">
-          <a href="/api/export/sales-csv" class="btn btn-secondary" download title="تصدير إلى ملف Excel">
+          <input type="text" id="suppSearchInput" class="form-control" style="width: 220px;" placeholder="بحث باسم الممون أو الشركة...">
+          <button class="btn btn-secondary" id="btnFilterSuppWithDebt">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            الممونين الدائنين فقط
+          </button>
+          <a href="/api/export/suppliers-csv" class="btn btn-secondary" download title="تصدير الممونين إلى Excel">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            تصدير Excel (CSV)
+            تصدير Excel
           </a>
-          <button class="btn btn-secondary" id="btnResetSalesFilter">إعادة ضبط</button>
+          <button class="btn btn-secondary" id="btnOpenNewPurchase">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            فاتورة شراء جديدة
+          </button>
+          <button class="btn btn-primary" id="btnOpenAddSupplier">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            إضافة ممون جديد
+          </button>
         </div>
       </div>
 
-      <div class="table-card">
+      <!-- Suppliers Summary Cards -->
+      <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 1.25rem;">
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-label">إجمالي ديون الممونين (واجبة الدفع للموردين)</span>
+            <span class="stat-card-value" id="kpiTotalSuppDebts" style="color: var(--danger);">0 دج</span>
+            <span class="stat-card-badge" style="color: var(--text-muted);">مستحقات فواتير الشراء غير المسددة</span>
+          </div>
+          <div class="stat-card-icon icon-rose">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L17.5 7.5H14v9.5h2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-label">عدد الممونين المسجلين</span>
+            <span class="stat-card-value" id="kpiSuppliersCount">0</span>
+            <span class="stat-card-badge" id="kpiCreditorSuppliersCount" style="color: var(--secondary);">0 شركات دائنة</span>
+          </div>
+          <div class="stat-card-icon icon-blue">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suppliers Table -->
+      <div class="table-card" style="margin-bottom: 1.5rem;">
+        <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 1.05rem; font-weight: 700;">قائمة الممونين المعتمدين</h3>
+        </div>
         <div class="table-responsive">
           <table class="data-table">
             <thead>
               <tr>
-                <th>رقم الفاتورة</th>
-                <th>التاريخ والوقت</th>
-                <th>الزبون</th>
-                <th>عدد المواد</th>
-                <th>المجموع</th>
-                <th>المدفوع</th>
-                <th>الدين</th>
-                <th>الربح الصافي</th>
-                <th>طريقة الدفع</th>
-                <th>معاينة</th>
+                <th>رقم</th>
+                <th>اسم الممون / جهة التوريد</th>
+                <th>الشركة / العلامة</th>
+                <th>الهاتف</th>
+                <th>العنوان</th>
+                <th>مستحقاته (دين علينا)</th>
+                <th>ملاحظات</th>
+                <th>إجراءات</th>
               </tr>
             </thead>
-            <tbody id="salesTableBody">
+            <tbody id="suppliersTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Purchases History Sub-table -->
+      <div class="table-card">
+        <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 1.05rem; font-weight: 700;">سجل فواتير وسندات الشراء (Bons de Réception)</h3>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">الفواتير الواردة لزيادة المخزون</span>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>رقم السند</th>
+                <th>التاريخ والوقت</th>
+                <th>الممون</th>
+                <th>المواد المشتراة</th>
+                <th>إجمالي الفاتورة</th>
+                <th>المدفوع نقداً</th>
+                <th>المتبقي بالدين</th>
+                <th>طريقة الدفع</th>
+                <th>ملاحظات</th>
+              </tr>
+            </thead>
+            <tbody id="purchasesTableBody">
               <!-- Dynamically populated -->
             </tbody>
           </table>
@@ -340,7 +401,60 @@
     </section>
 
     <!-- ==============================================
-         TAB 5: CASH DRAWER & DAILY REGISTER (يومية الصندوق)
+         TAB 5: PRODUCTS & INVENTORY (المخزون)
+    =============================================== -->
+    <section id="pane-products" class="tab-pane">
+      <div class="action-bar">
+        <div>
+          <h2 class="action-bar-title">إدارة المنتجات والمخزون</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">تحكم في الأسعار والتكلفة والكميات وطباعة الباركود</p>
+        </div>
+        <div class="action-bar-tools">
+          <input type="text" id="invSearchInput" class="form-control" style="width: 220px;" placeholder="بحث باسم المنتج أو الباركود...">
+          <select id="invCategoryFilter" class="form-control" style="width: 150px;">
+            <option value="all">كل التصنيفات</option>
+          </select>
+          <button class="btn btn-secondary" id="btnFilterLowStock">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            تنبيه النقص
+          </button>
+          <a href="/api/export/products-csv" class="btn btn-secondary" download title="تصدير إلى Excel">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            تصدير Excel
+          </a>
+          <button class="btn btn-primary" id="btnOpenAddProduct">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            إضافة منتج
+          </button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>الباركود</th>
+                <th>اسم المنتج</th>
+                <th>التصنيف</th>
+                <th>سعر الشراء</th>
+                <th>سعر البيع</th>
+                <th>هامش الربح</th>
+                <th>المخزون</th>
+                <th>الحالة</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================================
+         TAB 6: CASH DRAWER & DAILY REGISTER (يومية الصندوق Z)
     =============================================== -->
     <section id="pane-register" class="tab-pane">
       <div class="action-bar">
@@ -373,13 +487,18 @@
             </div>
 
             <div class="receipt-row" style="font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px dashed var(--border);">
-              <span>تحصيلات ديون سابقة (تسديدات نقدية):</span>
+              <span>تحصيلات ديون الزبائن (تسديدات نقدية):</span>
               <span id="regDebtCollections" style="font-weight: 700; color: var(--secondary);">0.00 دج</span>
             </div>
 
             <div class="receipt-row" style="font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px dashed var(--border);">
-              <span>مبيعات بالآجل (ديون مسجلة اليوم):</span>
-              <span id="regCreditSales" style="font-weight: 700; color: var(--danger);">0.00 دج</span>
+              <span>مدفوعات نقدية للممونين (شراء/تسديد):</span>
+              <span id="regSupplierPaid" style="font-weight: 700; color: var(--danger);">-0.00 دج</span>
+            </div>
+
+            <div class="receipt-row" style="font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px dashed var(--border);">
+              <span>مبيعات بالآجل (ديون زبائن مسجلة اليوم):</span>
+              <span id="regCreditSales" style="font-weight: 700; color: var(--accent);">0.00 دج</span>
             </div>
 
             <div class="receipt-row grand-total" style="font-size: 1.35rem; padding: 1rem 0; background: var(--bg-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-md);">
@@ -397,9 +516,9 @@
               عند نهاية دوام العمل، يمكنك طباعة تقرير إغلاق الصندوق الشامل (Z-Report) ومقارنة المبلغ الفعلي الموجود في الدرج مع الحساب الآلي لضبط أي فارق أو عجز.
             </p>
             <div style="background: var(--bg-subtle); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
-              <div style="font-size: 0.8rem; color: var(--text-muted);">عدد فواتير اليوم:</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">عدد فواتير البيع اليوم:</div>
               <div id="regInvoicesCount" style="font-size: 1.2rem; font-weight: 700;">0 فاتورة</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">صافي الأرباح المحققة:</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">صافي الأرباح المحققة اليوم:</div>
               <div id="regTodayProfit" style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">0.00 دج</div>
             </div>
           </div>
@@ -414,7 +533,7 @@
     </section>
 
     <!-- ==============================================
-         TAB 6: REPORTS & ANALYTICS
+         TAB 7: STATS & DASHBOARD
     =============================================== -->
     <section id="pane-stats" class="tab-pane">
       <div class="action-bar">
@@ -520,7 +639,7 @@
     </section>
 
     <!-- ==============================================
-         TAB 7: SETTINGS & BACKUP
+         TAB 8: SETTINGS & BACKUP
     =============================================== -->
     <section id="pane-settings" class="tab-pane">
       <div class="action-bar">
@@ -564,7 +683,7 @@
           <div>
             <h3 style="margin-bottom: 1rem; font-weight: 700;">إدارة قاعدة البيانات والنسخ الاحتياطي</h3>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-              يمكنك تصدير نسخة احتياطية من كل المنتجات والزبائن والفواتير والإعدادات كملف JSON واسترجاعها في أي وقت دون فقدان أي بيانات.
+              يمكنك تصدير نسخة احتياطية من كل المنتجات والزبائن والممونين والفواتير كملف JSON واسترجاعها في أي وقت دون فقدان أي بيانات.
             </p>
 
             <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -655,7 +774,7 @@
     </div>
   </div>
 
-  <!-- Add/Edit Customer Modal -->
+  <!-- Add/Edit Customer Modal (إضافة وتعديل زبون) -->
   <div class="modal-overlay" id="customerModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -667,7 +786,7 @@
           <input type="hidden" id="custId">
           <div class="form-group">
             <label>اسم الزبون الكامل: *</label>
-            <input type="text" id="custName" class="form-control" required placeholder="مثال: محمد العمري">
+            <input type="text" id="custName" class="form-control" required placeholder="مثال: محمد بلقاسم">
           </div>
           <div class="form-row">
             <div class="form-group">
@@ -696,11 +815,11 @@
     </div>
   </div>
 
-  <!-- Customer Debt Repayment Modal (تسديد دين) -->
+  <!-- Customer Debt Repayment Modal (تسديد دين زبون) -->
   <div class="modal-overlay" id="repayModal">
     <div class="modal-content" style="max-width: 440px;">
       <div class="modal-header">
-        <h3 class="modal-title">تسجيل دفعة تسديد دين (Règlement)</h3>
+        <h3 class="modal-title">تسجيل دفعة تسديد دين (Règlement Client)</h3>
         <button class="modal-close" id="btnCloseRepayModal">&times;</button>
       </div>
       <form id="repayForm">
@@ -730,7 +849,7 @@
     </div>
   </div>
 
-  <!-- Customer Statement Modal (كشف حساب) -->
+  <!-- Customer Statement Modal (كشف حساب زبون) -->
   <div class="modal-overlay" id="statementModal">
     <div class="modal-content" style="max-width: 650px;">
       <div class="modal-header">
@@ -768,6 +887,196 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" id="btnCloseStmtBtn">إغلاق</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Supplier Modal (إضافة وتعديل ممون) -->
+  <div class="modal-overlay" id="supplierModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="supplierModalTitle">إضافة ممون جديد</h3>
+        <button class="modal-close" id="btnCloseSupplierModal">&times;</button>
+      </div>
+      <form id="supplierForm">
+        <div class="modal-body">
+          <input type="hidden" id="suppId">
+          <div class="form-group">
+            <label>اسم الممون أو المورد: *</label>
+            <input type="text" id="suppName" class="form-control" required placeholder="مثال: مجمع سيفيتال للمواد الغذائية">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>اسم المؤسسة / الشركة:</label>
+              <input type="text" id="suppCompany" class="form-control" placeholder="مثال: Cevital Agro">
+            </div>
+            <div class="form-group">
+              <label>رقم الهاتف:</label>
+              <input type="text" id="suppPhone" class="form-control" placeholder="034 ...">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>العنوان / مقر الشركة:</label>
+              <input type="text" id="suppAddress" class="form-control" placeholder="المنطقة الصناعية...">
+            </div>
+            <div class="form-group">
+              <label>الرصيد الافتتاحي (مستحقات سابقة له):</label>
+              <input type="number" id="suppDebt" class="form-control" value="0" min="0" step="100">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>ملاحظات إضافية (أيام التوزيع، الحساب البنكي...):</label>
+            <input type="text" id="suppNotes" class="form-control" placeholder="ملاحظات...">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelSupplierModal">إلغاء</button>
+          <button type="submit" class="btn btn-primary">حفظ بيانات الممون</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supplier Debt Repayment Modal (تسديد دفعة للممون) -->
+  <div class="modal-overlay" id="suppRepayModal">
+    <div class="modal-content" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title">تسجيل تسديد دفعة للممون (Règlement Fournisseur)</h3>
+        <button class="modal-close" id="btnCloseSuppRepayModal">&times;</button>
+      </div>
+      <form id="suppRepayForm">
+        <div class="modal-body">
+          <input type="hidden" id="suppRepayId">
+          <div style="background: var(--bg-subtle); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+            <div style="font-size: 0.85rem; color: var(--text-muted);">اسم الممون:</div>
+            <div id="suppRepayName" style="font-size: 1.15rem; font-weight: 700;">—</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">إجمالي مستحقاته (دين علينا):</div>
+            <div id="suppRepayCurrentDebt" style="font-size: 1.35rem; font-weight: 800; color: var(--danger);">0.00 دج</div>
+          </div>
+
+          <div class="form-group">
+            <label>المبلغ المدفوع للممون (دج): *</label>
+            <input type="number" id="suppRepayAmount" class="form-control" min="1" step="10" required style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">
+          </div>
+          <div class="form-group">
+            <label>رقم الوصل أو الشيك / ملاحظة:</label>
+            <input type="text" id="suppRepayNote" class="form-control" value="تسديد نقدي مع وصل استلام">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelSuppRepayModal">إلغاء</button>
+          <button type="submit" class="btn btn-primary">تأكيد التسديد وتحديث حساب الممون</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supplier Statement Modal (كشف حساب الممون) -->
+  <div class="modal-overlay" id="suppStatementModal">
+    <div class="modal-content" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3 class="modal-title">كشف حساب الممون (Relevé Fournisseur)</h3>
+        <button class="modal-close" id="btnCloseSuppStatementModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; background: var(--bg-subtle); padding: 1rem; border-radius: var(--radius-md);">
+          <div>
+            <div id="suppStmtName" style="font-weight: 700; font-size: 1.1rem;"></div>
+            <div id="suppStmtCompany" style="font-size: 0.85rem; color: var(--text-muted);"></div>
+          </div>
+          <div style="text-align: left;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">مستحقاته المتبقية بذمتنا:</div>
+            <div id="suppStmtDebt" style="font-size: 1.35rem; font-weight: 800; color: var(--danger);">0 دج</div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem;">سجل فواتير التوريد والتسديدات:</h4>
+        <div style="max-height: 250px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-md);">
+          <table class="data-table" style="font-size: 0.85rem;">
+            <thead>
+              <tr>
+                <th>التاريخ</th>
+                <th>البيان</th>
+                <th>قيمة الفاتورة</th>
+                <th>المبلغ المسدد</th>
+                <th>الرصيد المتبقي</th>
+              </tr>
+            </thead>
+            <tbody id="suppStmtHistoryBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btnCloseSuppStmtBtn">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Purchase Invoice Modal (فاتورة شراء وتوريد سلعة جديدة) -->
+  <div class="modal-overlay" id="purchaseModal">
+    <div class="modal-content" style="max-width: 620px;">
+      <div class="modal-header">
+        <h3 class="modal-title">تسجيل فاتورة شراء وتوريد بضاعة للمخزن</h3>
+        <button class="modal-close" id="btnClosePurchaseModal">&times;</button>
+      </div>
+      <form id="purchaseForm">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>الممون / المورد: *</label>
+              <select id="purchSupplierSelect" class="form-control" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label>طريقة الدفع للممون:</label>
+              <select id="purchPaymentMethod" class="form-control">
+                <option value="cash">نقداً بالكامل (Cash)</option>
+                <option value="credit">على الحساب بالكامل (دين علينا للممون)</option>
+                <option value="partial">دفع جزئي (تسبيق + باقي بالدين)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="background: var(--bg-subtle); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+            <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem;">المادة المراد توريدها:</h4>
+            <div class="form-group">
+              <label>اختر المنتج من المخزن:</label>
+              <select id="purchProductSelect" class="form-control">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>الكمية الموردة: *</label>
+                <input type="number" id="purchQty" class="form-control" min="1" value="10" required>
+              </div>
+              <div class="form-group">
+                <label>سعر الشراء للوحدة (دج): *</label>
+                <input type="number" id="purchUnitPrice" class="form-control" min="1" step="1" required>
+              </div>
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: var(--primary); text-align: left;">
+              مجموع الشراء: <span id="purchItemTotal">0.00 دج</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" id="purchPaidGroup">
+              <label>المبلغ المدفوع نقداً للممون (دج):</label>
+              <input type="number" id="purchPaidAmount" class="form-control" min="0" step="10">
+            </div>
+            <div class="form-group">
+              <label>رقم سند الاستلام / ملاحظات:</label>
+              <input type="text" id="purchNotes" class="form-control" placeholder="مثال: سند رقم BL-1234">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelPurchaseModal">إلغاء</button>
+          <button type="submit" class="btn btn-primary">تأكيد التوريد وزيادة المخزون</button>
+        </div>
+      </form>
     </div>
   </div>
 

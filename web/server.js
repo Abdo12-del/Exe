@@ -52,6 +52,32 @@ const DEFAULT_DATA = {
   customerPayments: [
     { id: 1, customerId: 2, amount: 2000, dateStr: "2026-09-19 16:45", note: "دفعة نقدية على الحساب" }
   ],
+  suppliers: [
+    { id: 1, name: "مجمع سيفيتال للصناعات الغذائية", company: "Cevital Agro", phone: "034 21 22 23", address: "المنطقة الصناعية، بجاية", debt: 45000, notes: "توريد الزيوت والمواد الغذائية الأساسية" },
+    { id: 2, name: "ملبنة وادي الصومام", company: "Laiterie Soummam", phone: "034 35 11 22", address: "أقبو، بجاية", debt: 18500, notes: "توريد الحليب والألبان والأجبان مرتين أسبوعياً" },
+    { id: 3, name: "مؤسسة النور لتوزيع الجملة", company: "EURL Ennour Distribution", phone: "031 92 44 55", address: "المنطقة الصناعية، الخروب - قسنطينة", debt: 0, notes: "توريد مختلف المواد الغذائية - دفع فوري" },
+    { id: 4, name: "شركة الرويبة للمشروبات والعصائر", company: "NCA Rouiba", phone: "021 81 12 34", address: "المنطقة الصناعية، الرويبة - الجزائر", debt: 12000, notes: "عصائر ومشروبات طبيعية معلبة" }
+  ],
+  supplierPayments: [
+    { id: 1, supplierId: 1, supplierName: "مجمع سيفيتال للصناعات الغذائية", amount: 15000, dateStr: "2026-09-18 14:00", note: "دفعة نقدية موثقة بوصل" }
+  ],
+  purchases: [
+    {
+      id: 501,
+      invoiceNumber: "ACH-2026-0001",
+      dateStr: "2026-09-18 10:00",
+      supplierId: 1,
+      supplierName: "مجمع سيفيتال للصناعات الغذائية",
+      items: [
+        { productId: 1, name: "زيت زيتون بكر ممتاز 1 لتر", quantity: 30, buyPrice: 900, total: 27000 }
+      ],
+      total: 27000,
+      paidAmount: 15000,
+      debtAmount: 12000,
+      paymentMethod: "partial",
+      notes: "سند استلام بضاعة رقم BL-492"
+    }
+  ],
   sales: [
     {
       id: 1001,
@@ -100,10 +126,13 @@ const DEFAULT_DATA = {
   nextSaleId: 1003,
   nextCustomerId: 5,
   nextPaymentId: 2,
+  nextSupplierId: 5,
+  nextPurchaseId: 502,
+  nextSupplierPaymentId: 2,
   register: {
     isOpen: true,
     openedAt: "2026-09-20 08:00",
-    openingFloat: 10000 // رصيد الصندوق الافتتاحي
+    openingFloat: 10000
   }
 };
 
@@ -112,11 +141,16 @@ function loadData() {
     if (fs.existsSync(DATA_FILE)) {
       const raw = fs.readFileSync(DATA_FILE, 'utf8');
       const parsed = JSON.parse(raw);
-      // Ensure defaults for backwards compatibility
       if (!parsed.customers) parsed.customers = DEFAULT_DATA.customers;
       if (!parsed.customerPayments) parsed.customerPayments = DEFAULT_DATA.customerPayments;
+      if (!parsed.suppliers) parsed.suppliers = DEFAULT_DATA.suppliers;
+      if (!parsed.supplierPayments) parsed.supplierPayments = DEFAULT_DATA.supplierPayments;
+      if (!parsed.purchases) parsed.purchases = DEFAULT_DATA.purchases;
       if (!parsed.nextCustomerId) parsed.nextCustomerId = 5;
       if (!parsed.nextPaymentId) parsed.nextPaymentId = 2;
+      if (!parsed.nextSupplierId) parsed.nextSupplierId = 5;
+      if (!parsed.nextPurchaseId) parsed.nextPurchaseId = 502;
+      if (!parsed.nextSupplierPaymentId) parsed.nextSupplierPaymentId = 2;
       if (!parsed.register) parsed.register = DEFAULT_DATA.register;
       return parsed;
     }
@@ -245,7 +279,7 @@ app.delete('/api/products/:id', (req, res) => {
   res.json({ success: true, message: "تم حذف المنتج بنجاح" });
 });
 
-// ----------------- CUSTOMERS & DEBTS (الزبائن والكريدي) -----------------
+// ----------------- CUSTOMERS & DEBTS (قائمة الزبائن والكريدي) -----------------
 
 app.get('/api/customers', (req, res) => {
   const data = loadData();
@@ -313,7 +347,17 @@ app.put('/api/customers/:id', (req, res) => {
   res.json(data.customers[idx]);
 });
 
-// Record customer debt payment (تسديد دين)
+app.delete('/api/customers/:id', (req, res) => {
+  const data = loadData();
+  const id = parseInt(req.params.id, 10);
+  if (id === 1) return res.status(400).json({ error: "لا يمكن حذف الزبون الافتراضي" });
+
+  data.customers = data.customers.filter(c => c.id !== id);
+  saveData(data);
+  res.json({ success: true, message: "تم حذف الزبون بنجاح" });
+});
+
+// Record customer debt payment (تسديد دين الزبون)
 app.post('/api/customers/:id/pay', (req, res) => {
   const data = loadData();
   const id = parseInt(req.params.id, 10);
@@ -354,7 +398,6 @@ app.post('/api/customers/:id/pay', (req, res) => {
   });
 });
 
-// Customer history (sales + payments)
 app.get('/api/customers/:id/history', (req, res) => {
   const data = loadData();
   const id = parseInt(req.params.id, 10);
@@ -364,14 +407,222 @@ app.get('/api/customers/:id/history', (req, res) => {
   const sales = (data.sales || []).filter(s => s.customerId === id);
   const payments = (data.customerPayments || []).filter(p => p.customerId === id);
 
+  res.json({ customer, sales, payments });
+});
+
+// ----------------- SUPPLIERS & PURCHASES (الممونين والمشتريات) -----------------
+
+app.get('/api/suppliers', (req, res) => {
+  const data = loadData();
+  let list = data.suppliers || [];
+  const { q, withDebt } = req.query;
+
+  if (q) {
+    const query = q.trim().toLowerCase();
+    list = list.filter(s => 
+      s.name.toLowerCase().includes(query) || 
+      (s.company && s.company.toLowerCase().includes(query)) ||
+      (s.phone && s.phone.includes(query))
+    );
+  }
+  if (withDebt === 'true') {
+    list = list.filter(s => (s.debt || 0) > 0);
+  }
+
+  res.json(list);
+});
+
+app.post('/api/suppliers', (req, res) => {
+  const data = loadData();
+  const { name, company, phone, address, debt = 0, notes = '' } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: "اسم الممون مطلوب" });
+  }
+
+  const newId = data.nextSupplierId++;
+  const supplier = {
+    id: newId,
+    name: name.trim(),
+    company: company ? company.trim() : '',
+    phone: phone ? phone.trim() : '',
+    address: address ? address.trim() : '',
+    debt: Number(debt) || 0,
+    notes: notes ? notes.trim() : '',
+    createdAt: new Date().toISOString()
+  };
+
+  data.suppliers.push(supplier);
+  saveData(data);
+  res.status(201).json(supplier);
+});
+
+app.put('/api/suppliers/:id', (req, res) => {
+  const data = loadData();
+  const id = parseInt(req.params.id, 10);
+  const idx = data.suppliers.findIndex(s => s.id === id);
+  if (idx === -1) return res.status(404).json({ error: "الممون غير موجود" });
+
+  const existing = data.suppliers[idx];
+  const { name, company, phone, address, notes, debt } = req.body;
+
+  data.suppliers[idx] = {
+    ...existing,
+    name: name !== undefined ? name.trim() : existing.name,
+    company: company !== undefined ? company.trim() : existing.company,
+    phone: phone !== undefined ? phone.trim() : existing.phone,
+    address: address !== undefined ? address.trim() : existing.address,
+    notes: notes !== undefined ? notes.trim() : existing.notes,
+    debt: debt !== undefined ? Number(debt) : existing.debt
+  };
+
+  saveData(data);
+  res.json(data.suppliers[idx]);
+});
+
+app.delete('/api/suppliers/:id', (req, res) => {
+  const data = loadData();
+  const id = parseInt(req.params.id, 10);
+  data.suppliers = data.suppliers.filter(s => s.id !== id);
+  saveData(data);
+  res.json({ success: true, message: "تم حذف الممون بنجاح" });
+});
+
+// Record debt payment to supplier (تسديد دفعة للممون)
+app.post('/api/suppliers/:id/pay', (req, res) => {
+  const data = loadData();
+  const id = parseInt(req.params.id, 10);
+  const supplier = data.suppliers.find(s => s.id === id);
+  if (!supplier) return res.status(404).json({ error: "الممون غير موجود" });
+
+  const amount = Number(req.body.amount) || 0;
+  if (amount <= 0) {
+    return res.status(400).json({ error: "المبلغ يجب أن يكون أكبر من الصفر" });
+  }
+
+  const previousDebt = supplier.debt || 0;
+  supplier.debt = Math.max(0, previousDebt - amount);
+
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  const payment = {
+    id: data.nextSupplierPaymentId++,
+    supplierId: supplier.id,
+    supplierName: supplier.name,
+    amount: amount,
+    previousDebt,
+    remainingDebt: supplier.debt,
+    dateStr,
+    note: req.body.note ? req.body.note.trim() : 'تسديد نقدي'
+  };
+
+  data.supplierPayments.unshift(payment);
+  saveData(data);
+
   res.json({
-    customer,
-    sales,
-    payments
+    success: true,
+    message: `تم تسجيل تسديد ${amount} دج للممون "${supplier.name}"`,
+    payment,
+    supplier
   });
 });
 
-// ----------------- CHECKOUT & SALES -----------------
+app.get('/api/suppliers/:id/history', (req, res) => {
+  const data = loadData();
+  const id = parseInt(req.params.id, 10);
+  const supplier = data.suppliers.find(s => s.id === id);
+  if (!supplier) return res.status(404).json({ error: "الممون غير موجود" });
+
+  const purchases = (data.purchases || []).filter(p => p.supplierId === id);
+  const payments = (data.supplierPayments || []).filter(p => p.supplierId === id);
+
+  res.json({ supplier, purchases, payments });
+});
+
+// Purchases / Inward stock invoices (سندات وفواتير الشراء)
+app.get('/api/purchases', (req, res) => {
+  const data = loadData();
+  res.json(data.purchases || []);
+});
+
+app.post('/api/purchases', (req, res) => {
+  const data = loadData();
+  const { supplierId, items, paidAmount = 0, paymentMethod = 'cash', notes = '' } = req.body;
+
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: "فاتورة الشراء فارغة" });
+  }
+
+  const supplier = data.suppliers.find(s => s.id === parseInt(supplierId, 10));
+  if (!supplier) return res.status(400).json({ error: "الممون غير موجود" });
+
+  let total = 0;
+  const processedItems = [];
+
+  // Update product stock and optionally buyPrice
+  for (const it of items) {
+    const product = data.products.find(p => p.id === it.productId);
+    if (!product) continue;
+
+    const qty = parseInt(it.quantity, 10) || 0;
+    const unitBuy = Number(it.buyPrice) || product.buyPrice;
+    const itemTotal = qty * unitBuy;
+    total += itemTotal;
+
+    // Increment stock
+    product.stock += qty;
+    // Update buyPrice if provided
+    if (unitBuy > 0) product.buyPrice = unitBuy;
+
+    processedItems.push({
+      productId: product.id,
+      name: product.name,
+      quantity: qty,
+      buyPrice: unitBuy,
+      total: itemTotal
+    });
+  }
+
+  const paid = paymentMethod === 'credit' ? 0 : Number(paidAmount);
+  const debt = Math.max(0, total - paid);
+
+  // Update supplier's debt (what we owe them)
+  if (debt > 0) {
+    supplier.debt = (supplier.debt || 0) + debt;
+  }
+
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  const purchase = {
+    id: data.nextPurchaseId++,
+    invoiceNumber: `ACH-${now.getFullYear()}-${String(data.nextPurchaseId).padStart(4, '0')}`,
+    dateStr,
+    supplierId: supplier.id,
+    supplierName: supplier.name,
+    items: processedItems,
+    total,
+    paidAmount: paid,
+    debtAmount: debt,
+    paymentMethod,
+    notes: notes.trim()
+  };
+
+  data.purchases.unshift(purchase);
+  saveData(data);
+
+  res.status(201).json({
+    success: true,
+    message: "تم تسجيل فاتورة الشراء وزيادة المخزون بنجاح",
+    purchase,
+    supplier
+  });
+});
+
+// ----------------- SALES & INVOICES (سجل المبيعات) -----------------
 
 app.post('/api/sales', (req, res) => {
   const data = loadData();
@@ -387,10 +638,8 @@ app.post('/api/sales', (req, res) => {
     return res.status(400).json({ error: "سلة المشتريات فارغة" });
   }
 
-  // Find customer
   const customer = data.customers.find(c => c.id === parseInt(customerId, 10)) || data.customers[0];
 
-  // Validate stock and prepare sale items
   let subtotal = 0;
   let totalCost = 0;
   const processedItems = [];
@@ -442,21 +691,18 @@ app.post('/api/sales', (req, res) => {
   let change = 0;
 
   if (paymentMethod === 'credit') {
-    // بالكامل بالدين
     paid = 0;
     debt = total;
   } else if (paymentMethod === 'partial') {
     paid = Math.min(total, Number(paidAmount) || 0);
     debt = Math.max(0, total - paid);
   } else {
-    // نقداً Cash
     const rawPaid = Number(paidAmount) || total;
     paid = rawPaid >= total ? total : rawPaid;
     change = rawPaid > total ? (rawPaid - total) : 0;
     debt = rawPaid < total ? (total - rawPaid) : 0;
   }
 
-  // Update customer debt if any
   if (debt > 0) {
     customer.debt = (customer.debt || 0) + debt;
   }
@@ -519,14 +765,15 @@ app.get('/api/sales', (req, res) => {
   res.json(list);
 });
 
-// ----------------- CASH DRAWER & CLOSING (يومية الصندوق) -----------------
+// ----------------- CASH DRAWER (يومية الصندوق Z) -----------------
 
 app.get('/api/register/today', (req, res) => {
   const data = loadData();
   const today = new Date().toISOString().slice(0, 10);
 
   const todaySales = (data.sales || []).filter(s => s.dateStr && s.dateStr.startsWith(today));
-  const todayPayments = (data.customerPayments || []).filter(p => p.dateStr && p.dateStr.startsWith(today));
+  const todayCustPayments = (data.customerPayments || []).filter(p => p.dateStr && p.dateStr.startsWith(today));
+  const todaySuppPayments = (data.supplierPayments || []).filter(p => p.dateStr && p.dateStr.startsWith(today));
 
   let cashSalesTotal = 0;
   let creditSalesTotal = 0;
@@ -540,9 +787,11 @@ app.get('/api/register/today', (req, res) => {
     todayProfit += s.profit || 0;
   });
 
-  const debtCollections = todayPayments.reduce((acc, p) => acc + (p.amount || 0), 0);
+  const debtCollections = todayCustPayments.reduce((acc, p) => acc + (p.amount || 0), 0);
+  const supplierPaidCash = todaySuppPayments.reduce((acc, p) => acc + (p.amount || 0), 0);
+
   const openingFloat = data.register?.openingFloat || 10000;
-  const expectedCashInDrawer = openingFloat + cashSalesTotal + debtCollections;
+  const expectedCashInDrawer = openingFloat + cashSalesTotal + debtCollections - supplierPaidCash;
 
   res.json({
     date: today,
@@ -551,20 +800,22 @@ app.get('/api/register/today', (req, res) => {
     cashSalesTotal,
     creditSalesTotal,
     debtCollections,
+    supplierPaidCash,
     expectedCashInDrawer,
     todayProfit,
     invoicesCount: todaySales.length,
-    paymentsCount: todayPayments.length
+    paymentsCount: todayCustPayments.length
   });
 });
 
-// ----------------- STATS & ANALYTICS -----------------
+// ----------------- STATS & DASHBOARD -----------------
 
 app.get('/api/stats', (req, res) => {
   const data = loadData();
   const products = data.products || [];
   const sales = data.sales || [];
   const customers = data.customers || [];
+  const suppliers = data.suppliers || [];
 
   const today = new Date().toISOString().slice(0, 10);
   let todaySalesTotal = 0;
@@ -614,6 +865,7 @@ app.get('/api/stats', (req, res) => {
   });
 
   const totalCustomerDebts = customers.reduce((acc, c) => acc + (c.debt || 0), 0);
+  const totalSupplierDebts = suppliers.reduce((acc, s) => acc + (s.debt || 0), 0);
 
   const last7Days = [];
   for (let i = 6; i >= 0; i--) {
@@ -643,7 +895,8 @@ app.get('/api/stats', (req, res) => {
       totalSalesCount: sales.length,
       totalProfit: totalProfit,
       averageTicket: sales.length ? Math.round(totalSalesAmount / sales.length) : 0,
-      totalCustomerDebts
+      totalCustomerDebts,
+      totalSupplierDebts
     },
     inventory: {
       totalProducts: products.length,
@@ -658,13 +911,13 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-// ----------------- CSV EXPORTS (Excel Compatible) -----------------
+// ----------------- CSV EXPORTS -----------------
 
 app.get('/api/export/sales-csv', (req, res) => {
   const data = loadData();
   const sales = data.sales || [];
 
-  let csv = '\uFEFF'; // UTF-8 BOM so Excel opens Arabic correctly
+  let csv = '\uFEFF';
   csv += 'رقم الفاتورة,التاريخ والوقت,اسم الزبون,عدد المواد,المجموع الفرعي,التخفيض,الإجمالي,المدفوع,الدين,الربح الصافي,طريقة الدفع\n';
 
   sales.forEach(s => {
@@ -694,7 +947,23 @@ app.get('/api/export/products-csv', (req, res) => {
   res.send(csv);
 });
 
-// ----------------- DATABASE BACKUP & RESTORE -----------------
+app.get('/api/export/suppliers-csv', (req, res) => {
+  const data = loadData();
+  const suppliers = data.suppliers || [];
+
+  let csv = '\uFEFF';
+  csv += 'رقم الممون,اسم الممون,الشركة,الهاتف,العنوان,مستحقات الممون (دين علينا),ملاحظات\n';
+
+  suppliers.forEach(s => {
+    csv += `${s.id},"${s.name}","${s.company || ''}","${s.phone || ''}","${s.address || ''}",${s.debt || 0},"${s.notes || ''}"\n`;
+  });
+
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="suppliers_list.csv"');
+  res.send(csv);
+});
+
+// ----------------- BACKUP & RESTORE -----------------
 
 app.get('/api/export', (req, res) => {
   const data = loadData();
@@ -724,7 +993,7 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`=========================================`);
-  console.log(`  نظام تسيير المبيعات ونقاط البيع الحديث (POS v2.1)`);
+  console.log(`  نظام تسيير المبيعات ونقاط البيع (POS Pro v2.3)`);
   console.log(`  الخادم يعمل على: http://0.0.0.0:${PORT}`);
   console.log(`=========================================`);
 });
