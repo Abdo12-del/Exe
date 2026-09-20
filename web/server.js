@@ -14,12 +14,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Initial Default Data
 const DEFAULT_DATA = {
   settings: {
-    storeName: "متجر النور للمبيعات",
+    storeName: "متجر النور للمبيعات والتوزيع",
     phone: "0550 12 34 56",
     address: "شارع الاستقلال، الخروب - قسنطينة",
     currency: "دج",
     taxRate: 0,
-    receiptFooter: "شكراً لزيارتكم! البضاعة المباعة ترد أو تستبدل خلال 48 ساعة."
+    receiptFooter: "شكراً لزيارتكم! البضاعة المباعة ترد أو تستبدل خلال 48 ساعة مع الفاتورة."
   },
   categories: [
     { id: "all", name: "كل المنتجات", icon: "grid" },
@@ -43,12 +43,23 @@ const DEFAULT_DATA = {
     { id: 11, barcode: "6130001011", name: "سائل غسيل الأواني ليمون 750 مل", category: "cleaning", buyPrice: 180, sellPrice: 250, stock: 14, minStock: 5 },
     { id: 12, barcode: "6130001012", name: "مسحوق غسيل أوتوماتيك 3 كلغ", category: "cleaning", buyPrice: 650, sellPrice: 850, stock: 8, minStock: 4 }
   ],
+  customers: [
+    { id: 1, name: "زبون عابر (نقدي)", phone: "", address: "", debt: 0, creditLimit: 0, notes: "مبيعات عامة مباشرة" },
+    { id: 2, name: "محمد بلقاسم", phone: "0661 22 33 44", address: "حي النصر، عمارة 4", debt: 2500, creditLimit: 20000, notes: "زبون وفي، تسديد أسبوعي" },
+    { id: 3, name: "مطعم السعادة (كمال)", phone: "0770 55 66 77", address: "الشارع الرئيسي، وسط المدينة", debt: 7800, creditLimit: 50000, notes: "طلبيات جملة نصف شهرية" },
+    { id: 4, name: "أمينة شريف", phone: "0555 88 99 00", address: "حي الزهور، فيلا 12", debt: 0, creditLimit: 10000, notes: "تسديد فوري دائماً" }
+  ],
+  customerPayments: [
+    { id: 1, customerId: 2, amount: 2000, dateStr: "2026-09-19 16:45", note: "دفعة نقدية على الحساب" }
+  ],
   sales: [
     {
       id: 1001,
       invoiceNumber: "INV-2026-0001",
       timestamp: "2026-09-20T08:30:00.000Z",
       dateStr: "2026-09-20 09:30",
+      customerId: 1,
+      customerName: "زبون عابر (نقدي)",
       items: [
         { productId: 1, name: "زيت زيتون بكر ممتاز 1 لتر", quantity: 2, sellPrice: 1200, buyPrice: 900, total: 2400 },
         { productId: 8, name: "ماء معدني طبيعي 1.5 لتر", quantity: 6, sellPrice: 50, buyPrice: 35, total: 300 }
@@ -57,8 +68,9 @@ const DEFAULT_DATA = {
       tax: 0,
       discount: 0,
       total: 2700,
-      paidAmount: 3000,
-      changeAmount: 300,
+      paidAmount: 2700,
+      changeAmount: 0,
+      debtAmount: 0,
       profit: 690,
       paymentMethod: "cash"
     },
@@ -67,6 +79,8 @@ const DEFAULT_DATA = {
       invoiceNumber: "INV-2026-0002",
       timestamp: "2026-09-20T10:15:00.000Z",
       dateStr: "2026-09-20 11:15",
+      customerId: 2,
+      customerName: "محمد بلقاسم",
       items: [
         { productId: 3, name: "تمر دقلة نور أصلي 1 كلغ", quantity: 3, sellPrice: 700, buyPrice: 450, total: 2100 },
         { productId: 2, name: "عسل سدر طبيعي 500 غرام", quantity: 1, sellPrice: 2300, buyPrice: 1600, total: 2300 }
@@ -75,21 +89,36 @@ const DEFAULT_DATA = {
       tax: 0,
       discount: 100,
       total: 4300,
-      paidAmount: 4500,
-      changeAmount: 200,
+      paidAmount: 1800,
+      changeAmount: 0,
+      debtAmount: 2500,
       profit: 1350,
-      paymentMethod: "cash"
+      paymentMethod: "partial"
     }
   ],
   nextProductId: 13,
-  nextSaleId: 1003
+  nextSaleId: 1003,
+  nextCustomerId: 5,
+  nextPaymentId: 2,
+  register: {
+    isOpen: true,
+    openedAt: "2026-09-20 08:00",
+    openingFloat: 10000 // رصيد الصندوق الافتتاحي
+  }
 };
 
 function loadData() {
   try {
     if (fs.existsSync(DATA_FILE)) {
       const raw = fs.readFileSync(DATA_FILE, 'utf8');
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      // Ensure defaults for backwards compatibility
+      if (!parsed.customers) parsed.customers = DEFAULT_DATA.customers;
+      if (!parsed.customerPayments) parsed.customerPayments = DEFAULT_DATA.customerPayments;
+      if (!parsed.nextCustomerId) parsed.nextCustomerId = 5;
+      if (!parsed.nextPaymentId) parsed.nextPaymentId = 2;
+      if (!parsed.register) parsed.register = DEFAULT_DATA.register;
+      return parsed;
     }
   } catch (err) {
     console.error("Error reading data.json, using defaults:", err);
@@ -108,9 +137,8 @@ function saveData(data) {
   }
 }
 
-// ----------------- API Endpoints -----------------
+// ----------------- SETTINGS & CATEGORIES -----------------
 
-// Settings
 app.get('/api/settings', (req, res) => {
   const data = loadData();
   res.json(data.settings);
@@ -123,13 +151,13 @@ app.post('/api/settings', (req, res) => {
   res.json({ success: true, settings: data.settings });
 });
 
-// Categories
 app.get('/api/categories', (req, res) => {
   const data = loadData();
   res.json(data.categories || []);
 });
 
-// Products
+// ----------------- PRODUCTS & INVENTORY -----------------
+
 app.get('/api/products', (req, res) => {
   const data = loadData();
   let list = data.products || [];
@@ -217,14 +245,150 @@ app.delete('/api/products/:id', (req, res) => {
   res.json({ success: true, message: "تم حذف المنتج بنجاح" });
 });
 
-// Process a Sale (Cashier Checkout)
+// ----------------- CUSTOMERS & DEBTS (الزبائن والكريدي) -----------------
+
+app.get('/api/customers', (req, res) => {
+  const data = loadData();
+  let list = data.customers || [];
+  const { q, withDebt } = req.query;
+
+  if (q) {
+    const query = q.trim().toLowerCase();
+    list = list.filter(c => 
+      c.name.toLowerCase().includes(query) || 
+      (c.phone && c.phone.includes(query))
+    );
+  }
+  if (withDebt === 'true') {
+    list = list.filter(c => (c.debt || 0) > 0);
+  }
+
+  res.json(list);
+});
+
+app.post('/api/customers', (req, res) => {
+  const data = loadData();
+  const { name, phone, address, creditLimit = 10000, notes = '' } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: "اسم الزبون مطلوب" });
+  }
+
+  const newId = data.nextCustomerId++;
+  const customer = {
+    id: newId,
+    name: name.trim(),
+    phone: phone ? phone.trim() : '',
+    address: address ? address.trim() : '',
+    debt: 0,
+    creditLimit: Number(creditLimit) || 10000,
+    notes: notes ? notes.trim() : '',
+    createdAt: new Date().toISOString()
+  };
+
+  data.customers.push(customer);
+  saveData(data);
+  res.status(201).json(customer);
+});
+
+app.put('/api/customers/:id', (req, res) => {
+  const data = loadData();
+  const id = parseInt(req.params.id, 10);
+  const idx = data.customers.findIndex(c => c.id === id);
+  if (idx === -1) return res.status(404).json({ error: "الزبون غير موجود" });
+
+  const existing = data.customers[idx];
+  const { name, phone, address, creditLimit, notes } = req.body;
+
+  data.customers[idx] = {
+    ...existing,
+    name: name !== undefined ? name.trim() : existing.name,
+    phone: phone !== undefined ? phone.trim() : existing.phone,
+    address: address !== undefined ? address.trim() : existing.address,
+    creditLimit: creditLimit !== undefined ? Number(creditLimit) : existing.creditLimit,
+    notes: notes !== undefined ? notes.trim() : existing.notes
+  };
+
+  saveData(data);
+  res.json(data.customers[idx]);
+});
+
+// Record customer debt payment (تسديد دين)
+app.post('/api/customers/:id/pay', (req, res) => {
+  const data = loadData();
+  const id = parseInt(req.params.id, 10);
+  const customer = data.customers.find(c => c.id === id);
+  if (!customer) return res.status(404).json({ error: "الزبون غير موجود" });
+
+  const amount = Number(req.body.amount) || 0;
+  if (amount <= 0) {
+    return res.status(400).json({ error: "مبلغ التسديد يجب أن يكون أكبر من الصفر" });
+  }
+
+  const previousDebt = customer.debt || 0;
+  customer.debt = Math.max(0, previousDebt - amount);
+
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  const payment = {
+    id: data.nextPaymentId++,
+    customerId: customer.id,
+    customerName: customer.name,
+    amount: amount,
+    previousDebt,
+    remainingDebt: customer.debt,
+    dateStr,
+    note: req.body.note ? req.body.note.trim() : 'تسديد نقدي'
+  };
+
+  data.customerPayments.unshift(payment);
+  saveData(data);
+
+  res.json({
+    success: true,
+    message: `تم تسديد مبلغ ${amount} دج للزبون "${customer.name}" بنجاح`,
+    payment,
+    customer
+  });
+});
+
+// Customer history (sales + payments)
+app.get('/api/customers/:id/history', (req, res) => {
+  const data = loadData();
+  const id = parseInt(req.params.id, 10);
+  const customer = data.customers.find(c => c.id === id);
+  if (!customer) return res.status(404).json({ error: "الزبون غير موجود" });
+
+  const sales = (data.sales || []).filter(s => s.customerId === id);
+  const payments = (data.customerPayments || []).filter(p => p.customerId === id);
+
+  res.json({
+    customer,
+    sales,
+    payments
+  });
+});
+
+// ----------------- CHECKOUT & SALES -----------------
+
 app.post('/api/sales', (req, res) => {
   const data = loadData();
-  const { items, discount = 0, paidAmount = 0, paymentMethod = 'cash', customerName = '' } = req.body;
+  const { 
+    items, 
+    discount = 0, 
+    paidAmount = 0, 
+    paymentMethod = 'cash', 
+    customerId = 1 
+  } = req.body;
 
   if (!items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: "سلة المشتريات فارغة" });
   }
+
+  // Find customer
+  const customer = data.customers.find(c => c.id === parseInt(customerId, 10)) || data.customers[0];
 
   // Validate stock and prepare sale items
   let subtotal = 0;
@@ -234,7 +398,7 @@ app.post('/api/sales', (req, res) => {
   for (const item of items) {
     const product = data.products.find(p => p.id === item.productId);
     if (!product) {
-      return res.status(400).json({ error: `المنتج رقم ${item.productId} غير موجود في المخزون` });
+      return res.status(400).json({ error: `المنتج رقم ${item.productId} غير موجود` });
     }
     const qty = parseInt(item.quantity, 10);
     if (qty <= 0) {
@@ -272,8 +436,30 @@ app.post('/api/sales', (req, res) => {
   const finalDiscount = Number(discount) || 0;
   const total = Math.max(0, subtotal - finalDiscount);
   const profit = Math.max(0, (subtotal - totalCost) - finalDiscount);
-  const paid = paidAmount > 0 ? Number(paidAmount) : total;
-  const change = Math.max(0, paid - total);
+
+  let paid = 0;
+  let debt = 0;
+  let change = 0;
+
+  if (paymentMethod === 'credit') {
+    // بالكامل بالدين
+    paid = 0;
+    debt = total;
+  } else if (paymentMethod === 'partial') {
+    paid = Math.min(total, Number(paidAmount) || 0);
+    debt = Math.max(0, total - paid);
+  } else {
+    // نقداً Cash
+    const rawPaid = Number(paidAmount) || total;
+    paid = rawPaid >= total ? total : rawPaid;
+    change = rawPaid > total ? (rawPaid - total) : 0;
+    debt = rawPaid < total ? (total - rawPaid) : 0;
+  }
+
+  // Update customer debt if any
+  if (debt > 0) {
+    customer.debt = (customer.debt || 0) + debt;
+  }
 
   const saleId = data.nextSaleId++;
   const now = new Date();
@@ -285,35 +471,41 @@ app.post('/api/sales', (req, res) => {
     invoiceNumber: `INV-${now.getFullYear()}-${String(saleId).padStart(4, '0')}`,
     timestamp: now.toISOString(),
     dateStr: dateStr,
-    customerName: customerName.trim(),
+    customerId: customer.id,
+    customerName: customer.name,
     items: processedItems,
     subtotal,
     discount: finalDiscount,
     total,
     paidAmount: paid,
     changeAmount: change,
+    debtAmount: debt,
+    customerRemainingTotalDebt: customer.debt || 0,
     profit,
     paymentMethod
   };
 
-  data.sales.unshift(sale); // Latest first
+  data.sales.unshift(sale);
   saveData(data);
 
   res.status(201).json({
     success: true,
     sale,
+    customer,
     message: "تم تسجيل عملية البيع بنجاح وتحديث المخزون"
   });
 });
 
-// Sales History
 app.get('/api/sales', (req, res) => {
   const data = loadData();
-  const { date, q } = req.query;
+  const { date, q, customerId } = req.query;
   let list = data.sales || [];
 
   if (date) {
     list = list.filter(s => s.dateStr && s.dateStr.startsWith(date));
+  }
+  if (customerId) {
+    list = list.filter(s => s.customerId === parseInt(customerId, 10));
   }
   if (q) {
     const query = q.trim().toLowerCase();
@@ -327,11 +519,52 @@ app.get('/api/sales', (req, res) => {
   res.json(list);
 });
 
-// Stats & Dashboard Analytics
+// ----------------- CASH DRAWER & CLOSING (يومية الصندوق) -----------------
+
+app.get('/api/register/today', (req, res) => {
+  const data = loadData();
+  const today = new Date().toISOString().slice(0, 10);
+
+  const todaySales = (data.sales || []).filter(s => s.dateStr && s.dateStr.startsWith(today));
+  const todayPayments = (data.customerPayments || []).filter(p => p.dateStr && p.dateStr.startsWith(today));
+
+  let cashSalesTotal = 0;
+  let creditSalesTotal = 0;
+  let totalSalesAmount = 0;
+  let todayProfit = 0;
+
+  todaySales.forEach(s => {
+    totalSalesAmount += s.total || 0;
+    cashSalesTotal += s.paidAmount || 0;
+    creditSalesTotal += s.debtAmount || 0;
+    todayProfit += s.profit || 0;
+  });
+
+  const debtCollections = todayPayments.reduce((acc, p) => acc + (p.amount || 0), 0);
+  const openingFloat = data.register?.openingFloat || 10000;
+  const expectedCashInDrawer = openingFloat + cashSalesTotal + debtCollections;
+
+  res.json({
+    date: today,
+    openingFloat,
+    totalSalesAmount,
+    cashSalesTotal,
+    creditSalesTotal,
+    debtCollections,
+    expectedCashInDrawer,
+    todayProfit,
+    invoicesCount: todaySales.length,
+    paymentsCount: todayPayments.length
+  });
+});
+
+// ----------------- STATS & ANALYTICS -----------------
+
 app.get('/api/stats', (req, res) => {
   const data = loadData();
   const products = data.products || [];
   const sales = data.sales || [];
+  const customers = data.customers || [];
 
   const today = new Date().toISOString().slice(0, 10);
   let todaySalesTotal = 0;
@@ -341,7 +574,6 @@ app.get('/api/stats', (req, res) => {
   let totalSalesAmount = 0;
   let totalProfit = 0;
 
-  // Product sales counter
   const productSalesCount = {};
 
   sales.forEach(s => {
@@ -361,13 +593,11 @@ app.get('/api/stats', (req, res) => {
     }
   });
 
-  // Top selling products
   const topProducts = Object.entries(productSalesCount)
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 6);
 
-  // Inventory value & low stock
   let inventoryBuyValue = 0;
   let inventorySellValue = 0;
   let lowStockCount = 0;
@@ -383,7 +613,8 @@ app.get('/api/stats', (req, res) => {
     }
   });
 
-  // Recent 7 days timeline
+  const totalCustomerDebts = customers.reduce((acc, c) => acc + (c.debt || 0), 0);
+
   const last7Days = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
@@ -411,7 +642,8 @@ app.get('/api/stats', (req, res) => {
       totalSales: totalSalesAmount,
       totalSalesCount: sales.length,
       totalProfit: totalProfit,
-      averageTicket: sales.length ? Math.round(totalSalesAmount / sales.length) : 0
+      averageTicket: sales.length ? Math.round(totalSalesAmount / sales.length) : 0,
+      totalCustomerDebts
     },
     inventory: {
       totalProducts: products.length,
@@ -426,13 +658,44 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-// Reset demo data
-app.post('/api/reset-demo', (req, res) => {
-  saveData(DEFAULT_DATA);
-  res.json({ success: true, message: "تمت استعادة البيانات النموذجية بنجاح" });
+// ----------------- CSV EXPORTS (Excel Compatible) -----------------
+
+app.get('/api/export/sales-csv', (req, res) => {
+  const data = loadData();
+  const sales = data.sales || [];
+
+  let csv = '\uFEFF'; // UTF-8 BOM so Excel opens Arabic correctly
+  csv += 'رقم الفاتورة,التاريخ والوقت,اسم الزبون,عدد المواد,المجموع الفرعي,التخفيض,الإجمالي,المدفوع,الدين,الربح الصافي,طريقة الدفع\n';
+
+  sales.forEach(s => {
+    const itemCount = s.items ? s.items.reduce((acc, it) => acc + it.quantity, 0) : 0;
+    csv += `"${s.invoiceNumber}","${s.dateStr}","${s.customerName || ''}",${itemCount},${s.subtotal},${s.discount},${s.total},${s.paidAmount},${s.debtAmount || 0},${s.profit},"${s.paymentMethod}"\n`;
+  });
+
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="sales_report.csv"');
+  res.send(csv);
 });
 
-// Export Database
+app.get('/api/export/products-csv', (req, res) => {
+  const data = loadData();
+  const products = data.products || [];
+
+  let csv = '\uFEFF';
+  csv += 'الباركود,اسم المنتج,التصنيف,سعر الشراء,سعر البيع,هامش الربح,الكمية في المخزن,الحد الأدنى\n';
+
+  products.forEach(p => {
+    const margin = p.sellPrice - p.buyPrice;
+    csv += `"${p.barcode || ''}","${p.name}","${p.category}",${p.buyPrice},${p.sellPrice},${margin},${p.stock},${p.minStock || 5}\n`;
+  });
+
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="inventory_stock.csv"');
+  res.send(csv);
+});
+
+// ----------------- DATABASE BACKUP & RESTORE -----------------
+
 app.get('/api/export', (req, res) => {
   const data = loadData();
   res.setHeader('Content-Disposition', 'attachment; filename="taseer_backup.json"');
@@ -440,7 +703,6 @@ app.get('/api/export', (req, res) => {
   res.send(JSON.stringify(data, null, 2));
 });
 
-// Import Database
 app.post('/api/import', (req, res) => {
   const importedData = req.body;
   if (!importedData || !Array.isArray(importedData.products)) {
@@ -450,6 +712,11 @@ app.post('/api/import', (req, res) => {
   res.json({ success: true, message: "تم استيراد قاعدة البيانات بنجاح" });
 });
 
+app.post('/api/reset-demo', (req, res) => {
+  saveData(DEFAULT_DATA);
+  res.json({ success: true, message: "تمت استعادة البيانات النموذجية بنجاح" });
+});
+
 // Fallback to index.html for SPA
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -457,7 +724,7 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`=========================================`);
-  console.log(`  نظام تسيير المبيعات ونقاط البيع الحديث`);
+  console.log(`  نظام تسيير المبيعات ونقاط البيع الحديث (POS v2.1)`);
   console.log(`  الخادم يعمل على: http://0.0.0.0:${PORT}`);
   console.log(`=========================================`);
 });

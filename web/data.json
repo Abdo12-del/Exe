@@ -47,7 +47,7 @@
       "category": "food",
       "buyPrice": 900,
       "sellPrice": 1200,
-      "stock": 18,
+      "stock": 17,
       "minStock": 5
     },
     {
@@ -163,6 +163,35 @@
   ],
   "sales": [
     {
+      "id": 1003,
+      "invoiceNumber": "INV-2026-1003",
+      "timestamp": "2026-09-20T06:12:07.103Z",
+      "dateStr": "2026-09-20 06:12",
+      "customerId": 2,
+      "customerName": "محمد بلقاسم",
+      "items": [
+        {
+          "productId": 1,
+          "name": "زيت زيتون بكر ممتاز 1 لتر",
+          "barcode": "6130001001",
+          "category": "food",
+          "quantity": 1,
+          "sellPrice": 1200,
+          "buyPrice": 900,
+          "total": 1200
+        }
+      ],
+      "subtotal": 1200,
+      "discount": 0,
+      "total": 1200,
+      "paidAmount": 0,
+      "changeAmount": 0,
+      "debtAmount": 1200,
+      "customerRemainingTotalDebt": 3700,
+      "profit": 300,
+      "paymentMethod": "credit"
+    },
+    {
       "id": 1001,
       "invoiceNumber": "INV-2026-0001",
       "timestamp": "2026-09-20T08:30:00.000Z",
@@ -228,5 +257,69 @@
     }
   ],
   "nextProductId": 13,
-  "nextSaleId": 1003
+  "nextSaleId": 1004,
+  "customers": [
+    {
+      "id": 1,
+      "name": "زبون عابر (نقدي)",
+      "phone": "",
+      "address": "",
+      "debt": 0,
+      "creditLimit": 0,
+      "notes": "مبيعات عامة مباشرة"
+    },
+    {
+      "id": 2,
+      "name": "محمد بلقاسم",
+      "phone": "0661 22 33 44",
+      "address": "حي النصر، عمارة 4",
+      "debt": 2700,
+      "creditLimit": 20000,
+      "notes": "زبون وفي، تسديد أسبوعي"
+    },
+    {
+      "id": 3,
+      "name": "مطعم السعادة (كمال)",
+      "phone": "0770 55 66 77",
+      "address": "الشارع الرئيسي، وسط المدينة",
+      "debt": 7800,
+      "creditLimit": 50000,
+      "notes": "طلبيات جملة نصف شهرية"
+    },
+    {
+      "id": 4,
+      "name": "أمينة شريف",
+      "phone": "0555 88 99 00",
+      "address": "حي الزهور، فيلا 12",
+      "debt": 0,
+      "creditLimit": 10000,
+      "notes": "تسديد فوري دائماً"
+    }
+  ],
+  "customerPayments": [
+    {
+      "id": 2,
+      "customerId": 2,
+      "customerName": "محمد بلقاسم",
+      "amount": 1000,
+      "previousDebt": 3700,
+      "remainingDebt": 2700,
+      "dateStr": "2026-09-20 06:12",
+      "note": "تسديد نقدي"
+    },
+    {
+      "id": 1,
+      "customerId": 2,
+      "amount": 2000,
+      "dateStr": "2026-09-19 16:45",
+      "note": "دفعة نقدية على الحساب"
+    }
+  ],
+  "nextCustomerId": 5,
+  "nextPaymentId": 3,
+  "register": {
+    "isOpen": true,
+    "openedAt": "2026-09-20 08:00",
+    "openingFloat": 10000
+  }
 }

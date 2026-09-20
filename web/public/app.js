@@ -1,14 +1,17 @@
-// Modern Arabic POS System - Client Logic
+// Modern Arabic POS System Pro - Client Logic
 
 let state = {
   settings: {},
   categories: [],
   products: [],
-  cart: [], // { product, quantity }
+  customers: [],
+  cart: [],
   activeCategory: 'all',
   currentTab: 'pos',
   sales: [],
   stats: null,
+  registerData: null,
+  currentReceiptSale: null,
   charts: {
     timeline: null,
     topProducts: null
@@ -27,13 +30,19 @@ const elements = {
   btnFocusSearch: document.getElementById('btnFocusSearch'),
   posCategoryPills: document.getElementById('posCategoryPills'),
   posProductsGrid: document.getElementById('posProductsGrid'),
+  posCustomerSelect: document.getElementById('posCustomerSelect'),
+  posPaymentMethod: document.getElementById('posPaymentMethod'),
   cartItemsList: document.getElementById('cartItemsList'),
   cartCount: document.getElementById('cartCount'),
   cartSubtotal: document.getElementById('cartSubtotal'),
   cartDiscount: document.getElementById('cartDiscount'),
   cartPaid: document.getElementById('cartPaid'),
+  paidInputContainer: document.getElementById('paidInputContainer'),
   cartTotal: document.getElementById('cartTotal'),
   cartChange: document.getElementById('cartChange'),
+  cartChangeRow: document.getElementById('cartChangeRow'),
+  cartDebtRow: document.getElementById('cartDebtRow'),
+  cartDebtAmount: document.getElementById('cartDebtAmount'),
   btnCheckout: document.getElementById('btnCheckout'),
   btnClearCart: document.getElementById('btnClearCart'),
 
@@ -58,6 +67,59 @@ const elements = {
   prodSellPrice: document.getElementById('prodSellPrice'),
   prodStock: document.getElementById('prodStock'),
   prodMinStock: document.getElementById('prodMinStock'),
+
+  // Customers & Debts
+  customersTableBody: document.getElementById('customersTableBody'),
+  custSearchInput: document.getElementById('custSearchInput'),
+  btnFilterCustWithDebt: document.getElementById('btnFilterCustWithDebt'),
+  btnOpenAddCustomer: document.getElementById('btnOpenAddCustomer'),
+  kpiTotalDebts: document.getElementById('kpiTotalDebts'),
+  kpiDebtorsCount: document.getElementById('kpiDebtorsCount'),
+
+  // Customer Modal
+  customerModal: document.getElementById('customerModal'),
+  customerModalTitle: document.getElementById('customerModalTitle'),
+  customerForm: document.getElementById('customerForm'),
+  btnCloseCustomerModal: document.getElementById('btnCloseCustomerModal'),
+  btnCancelCustomerModal: document.getElementById('btnCancelCustomerModal'),
+  custId: document.getElementById('custId'),
+  custName: document.getElementById('custName'),
+  custPhone: document.getElementById('custPhone'),
+  custCreditLimit: document.getElementById('custCreditLimit'),
+  custAddress: document.getElementById('custAddress'),
+  custNotes: document.getElementById('custNotes'),
+
+  // Repay Modal
+  repayModal: document.getElementById('repayModal'),
+  btnCloseRepayModal: document.getElementById('btnCloseRepayModal'),
+  btnCancelRepayModal: document.getElementById('btnCancelRepayModal'),
+  repayForm: document.getElementById('repayForm'),
+  repayCustId: document.getElementById('repayCustId'),
+  repayCustName: document.getElementById('repayCustName'),
+  repayCustCurrentDebt: document.getElementById('repayCustCurrentDebt'),
+  repayAmount: document.getElementById('repayAmount'),
+  repayNote: document.getElementById('repayNote'),
+
+  // Statement Modal
+  statementModal: document.getElementById('statementModal'),
+  btnCloseStatementModal: document.getElementById('btnCloseStatementModal'),
+  btnCloseStmtBtn: document.getElementById('btnCloseStmtBtn'),
+  stmtCustName: document.getElementById('stmtCustName'),
+  stmtCustPhone: document.getElementById('stmtCustPhone'),
+  stmtCustDebt: document.getElementById('stmtCustDebt'),
+  stmtHistoryBody: document.getElementById('stmtHistoryBody'),
+
+  // Register Tab
+  regTodayDate: document.getElementById('regTodayDate'),
+  regOpeningFloat: document.getElementById('regOpeningFloat'),
+  regCashSales: document.getElementById('regCashSales'),
+  regDebtCollections: document.getElementById('regDebtCollections'),
+  regCreditSales: document.getElementById('regCreditSales'),
+  regExpectedCash: document.getElementById('regExpectedCash'),
+  regInvoicesCount: document.getElementById('regInvoicesCount'),
+  regTodayProfit: document.getElementById('regTodayProfit'),
+  btnRefreshRegister: document.getElementById('btnRefreshRegister'),
+  btnPrintZReport: document.getElementById('btnPrintZReport'),
 
   // Sales History
   salesTableBody: document.getElementById('salesTableBody'),
@@ -93,11 +155,18 @@ const elements = {
   btnCloseReceiptModal: document.getElementById('btnCloseReceiptModal'),
   btnDoneReceipt: document.getElementById('btnDoneReceipt'),
   btnPrintReceipt: document.getElementById('btnPrintReceipt'),
+  btnViewThermal: document.getElementById('btnViewThermal'),
+  btnViewA4: document.getElementById('btnViewA4'),
+  receiptPaper: document.getElementById('receiptPaper'),
+  a4InvoiceContainer: document.getElementById('a4InvoiceContainer'),
+
+  // Thermal Fields
   recStoreName: document.getElementById('recStoreName'),
   recStoreAddress: document.getElementById('recStoreAddress'),
   recStorePhone: document.getElementById('recStorePhone'),
   recInvoiceNum: document.getElementById('recInvoiceNum'),
   recDate: document.getElementById('recDate'),
+  recCustName: document.getElementById('recCustName'),
   recItemsBody: document.getElementById('recItemsBody'),
   recSubtotal: document.getElementById('recSubtotal'),
   recDiscount: document.getElementById('recDiscount'),
@@ -105,8 +174,28 @@ const elements = {
   recTotal: document.getElementById('recTotal'),
   recPaid: document.getElementById('recPaid'),
   recChange: document.getElementById('recChange'),
+  recChangeRow: document.getElementById('recChangeRow'),
+  recDebt: document.getElementById('recDebt'),
+  recDebtRow: document.getElementById('recDebtRow'),
   recBarcodeCode: document.getElementById('recBarcodeCode'),
   recFooterMsg: document.getElementById('recFooterMsg'),
+
+  // A4 Fields
+  a4StoreName: document.getElementById('a4StoreName'),
+  a4StoreAddress: document.getElementById('a4StoreAddress'),
+  a4StorePhone: document.getElementById('a4StorePhone'),
+  a4InvoiceNum: document.getElementById('a4InvoiceNum'),
+  a4Date: document.getElementById('a4Date'),
+  a4CustName: document.getElementById('a4CustName'),
+  a4PayMethod: document.getElementById('a4PayMethod'),
+  a4ItemsBody: document.getElementById('a4ItemsBody'),
+  a4Subtotal: document.getElementById('a4Subtotal'),
+  a4DiscountRow: document.getElementById('a4DiscountRow'),
+  a4Discount: document.getElementById('a4Discount'),
+  a4Total: document.getElementById('a4Total'),
+  a4Paid: document.getElementById('a4Paid'),
+  a4DebtRow: document.getElementById('a4DebtRow'),
+  a4Debt: document.getElementById('a4Debt'),
 
   toastContainer: document.getElementById('toastContainer')
 };
@@ -165,8 +254,12 @@ function switchTab(tabId) {
     renderPosCatalog();
   } else if (tabId === 'products') {
     loadProducts();
+  } else if (tabId === 'customers') {
+    loadCustomers();
   } else if (tabId === 'sales') {
     loadSales();
+  } else if (tabId === 'register') {
+    loadRegister();
   } else if (tabId === 'stats') {
     loadStats();
   } else if (tabId === 'settings') {
@@ -174,7 +267,7 @@ function switchTab(tabId) {
   }
 }
 
-// API Calls
+// API Calls Helper
 async function fetchAPI(url, options = {}) {
   try {
     const res = await fetch(url, {
@@ -195,16 +288,19 @@ async function fetchAPI(url, options = {}) {
 // Initial Data Load
 async function initApp() {
   try {
-    const [settings, categories] = await Promise.all([
+    const [settings, categories, customers] = await Promise.all([
       fetchAPI('/api/settings'),
-      fetchAPI('/api/categories')
+      fetchAPI('/api/categories'),
+      fetchAPI('/api/customers')
     ]);
     state.settings = settings;
     state.categories = categories;
+    state.customers = customers;
 
-    elements.headerStoreName.textContent = settings.storeName || 'متجر النور للمبيعات';
+    elements.headerStoreName.textContent = settings.storeName || 'متجر النور للمبيعات والتوزيع';
     renderCategoryPills();
     populateCategorySelects();
+    populateCustomerSelects();
     await loadProducts();
   } catch (err) {
     console.error("Initialization error:", err);
@@ -233,6 +329,14 @@ function populateCategorySelects() {
   elements.prodCategory.innerHTML = cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
   elements.invCategoryFilter.innerHTML = '<option value="all">كل التصنيفات</option>' +
     cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+function populateCustomerSelects() {
+  elements.posCustomerSelect.innerHTML = state.customers.map(c => `
+    <option value="${c.id}">
+      ${c.name} ${c.debt > 0 ? `(دين سابق: ${formatMoney(c.debt)})` : ''}
+    </option>
+  `).join('');
 }
 
 // Load Products
@@ -310,10 +414,8 @@ elements.posSearchInput.addEventListener('keydown', (e) => {
     const query = elements.posSearchInput.value.trim().toLowerCase();
     if (!query) return;
 
-    // Exact barcode match first
     let found = state.products.find(p => p.barcode && p.barcode.toLowerCase() === query);
     if (!found) {
-      // Partial name match
       found = state.products.find(p => p.name.toLowerCase().includes(query));
     }
 
@@ -390,6 +492,21 @@ elements.btnClearCart.addEventListener('click', () => {
   }
 });
 
+// Payment method selector changed
+elements.posPaymentMethod.addEventListener('change', () => {
+  const method = elements.posPaymentMethod.value;
+  if (method === 'credit') {
+    elements.paidInputContainer.style.opacity = '0.5';
+    elements.cartPaid.value = '0';
+    elements.cartPaid.disabled = true;
+  } else {
+    elements.paidInputContainer.style.opacity = '1';
+    elements.cartPaid.disabled = false;
+  }
+  const subtotal = state.cart.reduce((acc, it) => acc + (it.quantity * it.product.sellPrice), 0);
+  calculateCheckoutTotals(subtotal);
+});
+
 function renderCart() {
   if (state.cart.length === 0) {
     elements.cartItemsList.innerHTML = `
@@ -403,6 +520,7 @@ function renderCart() {
     elements.cartSubtotal.textContent = formatMoney(0);
     elements.cartTotal.textContent = formatMoney(0);
     elements.cartChange.textContent = formatMoney(0);
+    elements.cartDebtRow.style.display = 'none';
     elements.btnCheckout.disabled = true;
     return;
   }
@@ -432,7 +550,6 @@ function renderCart() {
     `;
   }).join('');
 
-  // Attach controls
   elements.cartItemsList.querySelectorAll('.btn-minus').forEach(b => {
     b.addEventListener('click', () => updateCartQty(parseInt(b.dataset.id, 10), -1));
   });
@@ -455,11 +572,43 @@ function calculateCheckoutTotals(subtotal) {
   const total = Math.max(0, subtotal - discount);
   elements.cartTotal.textContent = formatMoney(total);
 
-  const paid = parseFloat(elements.cartPaid.value) || 0;
-  const change = paid > total ? paid - total : 0;
-  elements.cartChange.textContent = formatMoney(change);
+  const method = elements.posPaymentMethod.value;
+  let paid = parseFloat(elements.cartPaid.value) || 0;
+  let change = 0;
+  let debt = 0;
 
-  return { subtotal, discount, total, paid, change };
+  if (method === 'credit') {
+    paid = 0;
+    debt = total;
+    elements.cartChangeRow.style.display = 'none';
+    elements.cartDebtRow.style.display = 'flex';
+    elements.cartDebtAmount.textContent = formatMoney(debt);
+  } else if (method === 'partial') {
+    paid = Math.min(total, paid);
+    debt = Math.max(0, total - paid);
+    elements.cartChangeRow.style.display = 'none';
+    elements.cartDebtRow.style.display = 'flex';
+    elements.cartDebtAmount.textContent = formatMoney(debt);
+  } else {
+    // cash
+    if (paid > total) {
+      change = paid - total;
+      debt = 0;
+    } else {
+      change = 0;
+      debt = total - paid;
+    }
+    elements.cartChangeRow.style.display = 'flex';
+    elements.cartChange.textContent = formatMoney(change);
+    if (debt > 0 && paid > 0) {
+      elements.cartDebtRow.style.display = 'flex';
+      elements.cartDebtAmount.textContent = formatMoney(debt);
+    } else {
+      elements.cartDebtRow.style.display = 'none';
+    }
+  }
+
+  return { subtotal, discount, total, paid, change, debt };
 }
 
 elements.cartDiscount.addEventListener('input', () => {
@@ -478,6 +627,8 @@ elements.btnCheckout.addEventListener('click', async () => {
 
   const subtotal = state.cart.reduce((acc, it) => acc + (it.quantity * it.product.sellPrice), 0);
   const calc = calculateCheckoutTotals(subtotal);
+  const customerId = parseInt(elements.posCustomerSelect.value, 10);
+  const method = elements.posPaymentMethod.value;
 
   const payload = {
     items: state.cart.map(it => ({
@@ -485,8 +636,9 @@ elements.btnCheckout.addEventListener('click', async () => {
       quantity: it.quantity
     })),
     discount: calc.discount,
-    paidAmount: calc.paid > 0 ? calc.paid : calc.total,
-    paymentMethod: 'cash'
+    paidAmount: calc.paid,
+    paymentMethod: method,
+    customerId: customerId
   };
 
   try {
@@ -500,16 +652,15 @@ elements.btnCheckout.addEventListener('click', async () => {
 
     showToast("✔ تمت عملية البيع بنجاح وتحديث المخزون");
 
-    // Clear cart
     state.cart = [];
     elements.cartDiscount.value = 0;
     elements.cartPaid.value = '';
+    elements.posPaymentMethod.value = 'cash';
+    elements.paidInputContainer.style.opacity = '1';
+    elements.cartPaid.disabled = false;
     renderCart();
 
-    // Reload products to update stock quantities
-    await loadProducts();
-
-    // Open Thermal Receipt Modal
+    await Promise.all([loadProducts(), loadCustomers()]);
     showReceiptModal(res.sale);
   } catch (err) {
     console.error(err);
@@ -517,18 +668,22 @@ elements.btnCheckout.addEventListener('click', async () => {
     elements.btnCheckout.disabled = false;
     elements.btnCheckout.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-      إتمام البيع وطباعة الفاتورة
+      إتمام البيع واستخراج الفاتورة
     `;
   }
 });
 
-// THERMAL RECEIPT DISPLAY
+// UNIFIED RECEIPT DISPLAY (Thermal + A4)
 function showReceiptModal(sale) {
-  elements.recStoreName.textContent = state.settings.storeName || 'متجر النور للمبيعات';
+  state.currentReceiptSale = sale;
+
+  // Thermal Fields
+  elements.recStoreName.textContent = state.settings.storeName || 'متجر النور للمبيعات والتوزيع';
   elements.recStoreAddress.textContent = state.settings.address || '';
   elements.recStorePhone.textContent = state.settings.phone ? `هاتف: ${state.settings.phone}` : '';
   elements.recInvoiceNum.textContent = `فاتورة رقم: ${sale.invoiceNumber}`;
   elements.recDate.textContent = `التاريخ: ${sale.dateStr}`;
+  elements.recCustName.textContent = `الزبون: ${sale.customerName || 'زبون عابر'}`;
 
   elements.recItemsBody.innerHTML = sale.items.map(it => `
     <tr>
@@ -548,22 +703,83 @@ function showReceiptModal(sale) {
   }
   elements.recTotal.textContent = formatMoney(sale.total);
   elements.recPaid.textContent = formatMoney(sale.paidAmount);
-  elements.recChange.textContent = formatMoney(sale.changeAmount);
+
+  if (sale.changeAmount > 0) {
+    elements.recChangeRow.style.display = 'flex';
+    elements.recChange.textContent = formatMoney(sale.changeAmount);
+  } else {
+    elements.recChangeRow.style.display = 'none';
+  }
+
+  if (sale.debtAmount > 0) {
+    elements.recDebtRow.style.display = 'flex';
+    elements.recDebt.textContent = formatMoney(sale.debtAmount);
+  } else {
+    elements.recDebtRow.style.display = 'none';
+  }
+
   elements.recBarcodeCode.textContent = sale.invoiceNumber;
   elements.recFooterMsg.textContent = state.settings.receiptFooter || 'شكراً لزيارتكم! مرحباً بكم دائماً.';
 
+  // A4 Fields
+  elements.a4StoreName.textContent = state.settings.storeName;
+  elements.a4StoreAddress.textContent = state.settings.address;
+  elements.a4StorePhone.textContent = `الهاتف: ${state.settings.phone}`;
+  elements.a4InvoiceNum.textContent = sale.invoiceNumber;
+  elements.a4Date.textContent = sale.dateStr;
+  elements.a4CustName.textContent = sale.customerName || 'زبون عابر';
+  elements.a4PayMethod.textContent = sale.paymentMethod === 'cash' ? 'نقداً (Cash)' : (sale.paymentMethod === 'credit' ? 'على الحساب بالكامل (دين)' : 'دفع جزئي');
+
+  elements.a4ItemsBody.innerHTML = sale.items.map((it, idx) => `
+    <tr style="border-bottom: 1px solid #e2e8f0;">
+      <td style="padding: 0.5rem 0.75rem;">${idx + 1}</td>
+      <td style="padding: 0.5rem 0.75rem; font-weight: 600;">${it.name}</td>
+      <td style="padding: 0.5rem 0.75rem; text-align: center;">${it.quantity}</td>
+      <td style="padding: 0.5rem 0.75rem; text-align: left;">${formatMoney(it.sellPrice)}</td>
+      <td style="padding: 0.5rem 0.75rem; text-align: left; font-weight: 700;">${formatMoney(it.total)}</td>
+    </tr>
+  `).join('');
+
+  elements.a4Subtotal.textContent = formatMoney(sale.subtotal);
+  if (sale.discount > 0) {
+    elements.a4DiscountRow.style.display = 'flex';
+    elements.a4Discount.textContent = formatMoney(sale.discount);
+  } else {
+    elements.a4DiscountRow.style.display = 'none';
+  }
+  elements.a4Total.textContent = formatMoney(sale.total);
+  elements.a4Paid.textContent = formatMoney(sale.paidAmount);
+  if (sale.debtAmount > 0) {
+    elements.a4DebtRow.style.display = 'flex';
+    elements.a4Debt.textContent = formatMoney(sale.debtAmount);
+  } else {
+    elements.a4DebtRow.style.display = 'none';
+  }
+
+  // Default to Thermal
+  setReceiptView('thermal');
   elements.receiptModal.classList.add('active');
 }
 
-elements.btnCloseReceiptModal.addEventListener('click', () => {
-  elements.receiptModal.classList.remove('active');
-});
-elements.btnDoneReceipt.addEventListener('click', () => {
-  elements.receiptModal.classList.remove('active');
-});
-elements.btnPrintReceipt.addEventListener('click', () => {
-  window.print();
-});
+function setReceiptView(mode) {
+  if (mode === 'thermal') {
+    elements.receiptPaper.style.display = 'block';
+    elements.a4InvoiceContainer.style.display = 'none';
+    elements.btnViewThermal.classList.add('active');
+    elements.btnViewA4.classList.remove('active');
+  } else {
+    elements.receiptPaper.style.display = 'none';
+    elements.a4InvoiceContainer.style.display = 'block';
+    elements.btnViewA4.classList.add('active');
+    elements.btnViewThermal.classList.remove('active');
+  }
+}
+
+elements.btnViewThermal.addEventListener('click', () => setReceiptView('thermal'));
+elements.btnViewA4.addEventListener('click', () => setReceiptView('a4'));
+elements.btnCloseReceiptModal.addEventListener('click', () => elements.receiptModal.classList.remove('active'));
+elements.btnDoneReceipt.addEventListener('click', () => elements.receiptModal.classList.remove('active'));
+elements.btnPrintReceipt.addEventListener('click', () => window.print());
 
 // INVENTORY MANAGEMENT TAB
 function renderInventoryTable() {
@@ -621,7 +837,7 @@ function renderInventoryTable() {
           ${!isOut && !isLow ? '<span class="badge badge-success">متوفر</span>' : ''}
         </td>
         <td>
-          <div style="display: flex; gap: 0.5rem;">
+          <div style="display: flex; gap: 0.4rem;">
             <button class="btn btn-secondary btn-edit-prod" data-id="${p.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">تعديل</button>
             <button class="btn btn-danger btn-del-prod" data-id="${p.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">حذف</button>
           </div>
@@ -737,7 +953,320 @@ async function deleteProduct(productId) {
   }
 }
 
-// SALES HISTORY TAB
+// ----------------- CUSTOMERS & DEBTS (الزبائن والكريدي) -----------------
+
+async function loadCustomers() {
+  try {
+    const query = elements.custSearchInput.value.trim();
+    let url = '/api/customers?';
+    if (query) url += `q=${encodeURIComponent(query)}&`;
+
+    const customers = await fetchAPI(url);
+    state.customers = customers;
+    populateCustomerSelects();
+    renderCustomersTable();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+let filterDebtActive = false;
+elements.btnFilterCustWithDebt.addEventListener('click', () => {
+  filterDebtActive = !filterDebtActive;
+  elements.btnFilterCustWithDebt.classList.toggle('btn-primary', filterDebtActive);
+  elements.btnFilterCustWithDebt.classList.toggle('btn-secondary', !filterDebtActive);
+  renderCustomersTable();
+});
+
+function renderCustomersTable() {
+  let list = state.customers;
+  if (filterDebtActive) {
+    list = list.filter(c => (c.debt || 0) > 0);
+  }
+
+  let totalDebts = 0;
+  let debtorsCount = 0;
+
+  state.customers.forEach(c => {
+    if (c.debt > 0) {
+      totalDebts += c.debt;
+      debtorsCount++;
+    }
+  });
+
+  elements.kpiTotalDebts.textContent = formatMoney(totalDebts);
+  elements.kpiDebtorsCount.textContent = `${debtorsCount} زبائن`;
+
+  if (list.length === 0) {
+    elements.customersTableBody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+          لا يوجد زبائن مطابقين
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  elements.customersTableBody.innerHTML = list.map(c => `
+    <tr>
+      <td>${c.id}</td>
+      <td style="font-weight: 700;">${c.name}</td>
+      <td style="font-family: monospace;">${c.phone || '—'}</td>
+      <td>${c.address || '—'}</td>
+      <td style="font-weight: 800; color: ${c.debt > 0 ? 'var(--danger)' : 'var(--primary)'}; font-size: 1.05rem;">
+        ${formatMoney(c.debt || 0)}
+      </td>
+      <td style="color: var(--text-muted); font-size: 0.85rem;">${formatMoney(c.creditLimit || 0)}</td>
+      <td style="font-size: 0.85rem; color: var(--text-muted);">${c.notes || '—'}</td>
+      <td>
+        <div style="display: flex; gap: 0.4rem;">
+          ${c.debt > 0 ? `
+            <button class="btn btn-primary btn-repay-debt" data-id="${c.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+              تسديد دفعة
+            </button>
+          ` : ''}
+          <button class="btn btn-secondary btn-cust-stmt" data-id="${c.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+            كشف حساب
+          </button>
+          <button class="btn btn-secondary btn-edit-cust" data-id="${c.id}" style="padding: 0.3rem 0.5rem; font-size: 0.8rem;">
+            تعديل
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  elements.customersTableBody.querySelectorAll('.btn-repay-debt').forEach(b => {
+    b.addEventListener('click', () => openRepayModal(parseInt(b.dataset.id, 10)));
+  });
+  elements.customersTableBody.querySelectorAll('.btn-cust-stmt').forEach(b => {
+    b.addEventListener('click', () => openStatementModal(parseInt(b.dataset.id, 10)));
+  });
+  elements.customersTableBody.querySelectorAll('.btn-edit-cust').forEach(b => {
+    b.addEventListener('click', () => openEditCustomerModal(parseInt(b.dataset.id, 10)));
+  });
+}
+
+elements.custSearchInput.addEventListener('input', loadCustomers);
+
+// Add / Edit Customer Modal
+elements.btnOpenAddCustomer.addEventListener('click', () => {
+  elements.customerModalTitle.textContent = "إضافة زبون جديد";
+  elements.custId.value = "";
+  elements.customerForm.reset();
+  elements.custCreditLimit.value = "20000";
+  elements.customerModal.classList.add('active');
+  elements.custName.focus();
+});
+
+function openEditCustomerModal(custId) {
+  const c = state.customers.find(x => x.id === custId);
+  if (!c) return;
+
+  elements.customerModalTitle.textContent = "تعديل بيانات الزبون";
+  elements.custId.value = c.id;
+  elements.custName.value = c.name;
+  elements.custPhone.value = c.phone || "";
+  elements.custCreditLimit.value = c.creditLimit || 20000;
+  elements.custAddress.value = c.address || "";
+  elements.custNotes.value = c.notes || "";
+
+  elements.customerModal.classList.add('active');
+}
+
+elements.btnCloseCustomerModal.addEventListener('click', () => elements.customerModal.classList.remove('active'));
+elements.btnCancelCustomerModal.addEventListener('click', () => elements.customerModal.classList.remove('active'));
+
+elements.customerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = elements.custId.value;
+  const payload = {
+    name: elements.custName.value.trim(),
+    phone: elements.custPhone.value.trim(),
+    creditLimit: Number(elements.custCreditLimit.value),
+    address: elements.custAddress.value.trim(),
+    notes: elements.custNotes.value.trim()
+  };
+
+  try {
+    if (id) {
+      await fetchAPI(`/api/customers/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+      });
+      showToast("تم تحديث بيانات الزبون");
+    } else {
+      await fetchAPI('/api/customers', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      showToast("تمت إضافة الزبون بنجاح");
+    }
+    elements.customerModal.classList.remove('active');
+    await loadCustomers();
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// Repay Debt Modal
+function openRepayModal(custId) {
+  const c = state.customers.find(x => x.id === custId);
+  if (!c) return;
+
+  elements.repayCustId.value = c.id;
+  elements.repayCustName.textContent = c.name;
+  elements.repayCustCurrentDebt.textContent = formatMoney(c.debt);
+  elements.repayAmount.value = c.debt;
+  elements.repayAmount.max = c.debt;
+  elements.repayModal.classList.add('active');
+  elements.repayAmount.focus();
+}
+
+elements.btnCloseRepayModal.addEventListener('click', () => elements.repayModal.classList.remove('active'));
+elements.btnCancelRepayModal.addEventListener('click', () => elements.repayModal.classList.remove('active'));
+
+elements.repayForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = elements.repayCustId.value;
+  const amount = Number(elements.repayAmount.value);
+  const note = elements.repayNote.value;
+
+  try {
+    await fetchAPI(`/api/customers/${id}/pay`, {
+      method: 'POST',
+      body: JSON.stringify({ amount, note })
+    });
+    showToast("✔ تم تسجيل دفعة التسديد وتحديث رصيد الزبون");
+    elements.repayModal.classList.remove('active');
+    await loadCustomers();
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// Statement Modal (كشف حساب)
+async function openStatementModal(custId) {
+  try {
+    const res = await fetchAPI(`/api/customers/${custId}/history`);
+    elements.stmtCustName.textContent = res.customer.name;
+    elements.stmtCustPhone.textContent = res.customer.phone ? `هاتف: ${res.customer.phone}` : '';
+    elements.stmtCustDebt.textContent = formatMoney(res.customer.debt);
+
+    const timeline = [];
+    (res.sales || []).forEach(s => {
+      timeline.push({
+        date: s.dateStr,
+        desc: `فاتورة مبيعات (${s.invoiceNumber})`,
+        amount: s.total,
+        paid: s.paidAmount,
+        debt: s.debtAmount || 0,
+        type: 'sale'
+      });
+    });
+    (res.payments || []).forEach(p => {
+      timeline.push({
+        date: p.dateStr,
+        desc: `تسديد نقدي: ${p.note || ''}`,
+        amount: 0,
+        paid: p.amount,
+        debt: -p.amount,
+        type: 'payment'
+      });
+    });
+
+    timeline.sort((a, b) => b.date.localeCompare(a.date));
+
+    if (timeline.length === 0) {
+      elements.stmtHistoryBody.innerHTML = `
+        <tr><td colspan="5" style="text-align: center; padding: 1.5rem;">لا توجد حركات مسجلة لهذا الزبون</td></tr>
+      `;
+    } else {
+      elements.stmtHistoryBody.innerHTML = timeline.map(t => `
+        <tr>
+          <td>${t.date}</td>
+          <td style="font-weight: 600;">${t.desc}</td>
+          <td>${t.amount ? formatMoney(t.amount) : '—'}</td>
+          <td style="color: var(--primary); font-weight: 700;">${formatMoney(t.paid)}</td>
+          <td style="color: ${t.debt > 0 ? 'var(--danger)' : 'var(--secondary)'}; font-weight: 700;">
+            ${t.debt > 0 ? '+' + formatMoney(t.debt) : (t.debt < 0 ? '-' + formatMoney(Math.abs(t.debt)) : '0')}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    elements.statementModal.classList.add('active');
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+elements.btnCloseStatementModal.addEventListener('click', () => elements.statementModal.classList.remove('active'));
+elements.btnCloseStmtBtn.addEventListener('click', () => elements.statementModal.classList.remove('active'));
+
+// ----------------- REGISTER & CASH DRAWER (يومية الصندوق) -----------------
+
+async function loadRegister() {
+  try {
+    const reg = await fetchAPI('/api/register/today');
+    state.registerData = reg;
+
+    elements.regTodayDate.textContent = reg.date;
+    elements.regOpeningFloat.textContent = formatMoney(reg.openingFloat);
+    elements.regCashSales.textContent = formatMoney(reg.cashSalesTotal);
+    elements.regDebtCollections.textContent = formatMoney(reg.debtCollections);
+    elements.regCreditSales.textContent = formatMoney(reg.creditSalesTotal);
+    elements.regExpectedCash.textContent = formatMoney(reg.expectedCashInDrawer);
+    elements.regInvoicesCount.textContent = `${reg.invoicesCount} فاتورة (و ${reg.paymentsCount} تسديد)`;
+    elements.regTodayProfit.textContent = formatMoney(reg.todayProfit);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+elements.btnRefreshRegister.addEventListener('click', loadRegister);
+
+elements.btnPrintZReport.addEventListener('click', () => {
+  if (!state.registerData) return;
+  const reg = state.registerData;
+
+  const zHtml = `
+    <div style="font-family: monospace; padding: 20px; width: 300px; margin: 0 auto; line-height: 1.5;">
+      <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 8px;">
+        <h2 style="margin: 0; font-size: 16px;">تقرير إغلاق الصندوق (Z)</h2>
+        <div>${state.settings.storeName}</div>
+        <div>التاريخ: ${reg.date}</div>
+      </div>
+      <div style="padding: 10px 0; border-bottom: 1px dashed #000;">
+        <div>الرصيد الافتتاحي: ${formatMoney(reg.openingFloat)}</div>
+        <div>المبيعات النقدية: ${formatMoney(reg.cashSalesTotal)}</div>
+        <div>تحصيل ديون سابقة: ${formatMoney(reg.debtCollections)}</div>
+        <div style="font-weight: bold; margin-top: 6px;">إجمالي المقبوضات النقدية: ${formatMoney(reg.cashSalesTotal + reg.debtCollections)}</div>
+        <div style="margin-top: 4px; color: #666;">مبيعات بالآجل (ديون): ${formatMoney(reg.creditSalesTotal)}</div>
+      </div>
+      <div style="padding: 10px 0; border-bottom: 1px dashed #000; font-weight: bold; font-size: 14px;">
+        <div>النقد الواجب توفره: ${formatMoney(reg.expectedCashInDrawer)}</div>
+      </div>
+      <div style="padding: 8px 0; font-size: 11px;">
+        <div>عدد فواتير البيع: ${reg.invoicesCount}</div>
+        <div>صافي أرباح اليوم: ${formatMoney(reg.todayProfit)}</div>
+      </div>
+      <div style="text-align: center; margin-top: 15px; font-size: 10px;">
+        *** نهاية تقرير اليومية ***
+      </div>
+    </div>
+  `;
+
+  const win = window.open('', '_blank');
+  win.document.write(`<html><head><title>Z-Report</title></head><body dir="rtl">${zHtml}</body></html>`);
+  win.document.close();
+  win.focus();
+  win.print();
+});
+
+// ----------------- SALES HISTORY TAB -----------------
+
 async function loadSales() {
   try {
     const query = elements.salesSearchInput.value.trim();
@@ -758,7 +1287,7 @@ function renderSalesTable() {
   if (state.sales.length === 0) {
     elements.salesTableBody.innerHTML = `
       <tr>
-        <td colspan="9" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+        <td colspan="10" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
           لا توجد فواتير مبيعات مسجلة
         </td>
       </tr>
@@ -768,16 +1297,25 @@ function renderSalesTable() {
 
   elements.salesTableBody.innerHTML = state.sales.map(s => {
     const totalItems = s.items.reduce((acc, it) => acc + it.quantity, 0);
+    const methodNames = {
+      cash: 'نقداً',
+      credit: 'دين بالكامل',
+      partial: 'دفع جزئي'
+    };
+
     return `
       <tr>
         <td style="font-family: monospace; font-weight: 700; color: var(--primary-dark);">${s.invoiceNumber}</td>
         <td style="font-size: 0.85rem; color: var(--text-muted);">${s.dateStr}</td>
+        <td style="font-weight: 600;">${s.customerName || 'زبون عابر'}</td>
         <td style="text-align: center;">${totalItems} مواد</td>
         <td>${formatMoney(s.subtotal)}</td>
-        <td style="color: var(--accent);">${s.discount > 0 ? '-' + formatMoney(s.discount) : '0'}</td>
-        <td style="font-weight: 700; color: var(--primary);">${formatMoney(s.total)}</td>
+        <td style="color: var(--primary); font-weight: 700;">${formatMoney(s.paidAmount)}</td>
+        <td style="color: ${s.debtAmount > 0 ? 'var(--danger)' : 'var(--text-muted)'}; font-weight: 700;">
+          ${s.debtAmount > 0 ? formatMoney(s.debtAmount) : '—'}
+        </td>
         <td style="color: var(--secondary); font-weight: 600;">+${formatMoney(s.profit)}</td>
-        <td><span class="badge badge-info">نقداً (Cash)</span></td>
+        <td><span class="badge ${s.paymentMethod === 'cash' ? 'badge-success' : 'badge-warning'}">${methodNames[s.paymentMethod] || s.paymentMethod}</span></td>
         <td>
           <button class="btn btn-secondary btn-view-sale" data-id="${s.id}" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
             معاينة
@@ -804,7 +1342,8 @@ elements.btnResetSalesFilter.addEventListener('click', () => {
   loadSales();
 });
 
-// STATS & DASHBOARD TAB
+// ----------------- STATS & DASHBOARD TAB -----------------
+
 async function loadStats() {
   try {
     const stats = await fetchAPI('/api/stats');
@@ -833,7 +1372,6 @@ elements.btnRefreshStats.addEventListener('click', loadStats);
 function renderCharts(stats) {
   if (typeof Chart === 'undefined') return;
 
-  // 1. Timeline Chart
   const ctxTimeline = document.getElementById('salesTimelineChart').getContext('2d');
   if (state.charts.timeline) state.charts.timeline.destroy();
 
@@ -873,7 +1411,6 @@ function renderCharts(stats) {
     }
   });
 
-  // 2. Top Products Chart
   const ctxTop = document.getElementById('topProductsChart').getContext('2d');
   if (state.charts.topProducts) state.charts.topProducts.destroy();
 
@@ -901,7 +1438,8 @@ function renderCharts(stats) {
   });
 }
 
-// SETTINGS & BACKUP TAB
+// ----------------- SETTINGS & BACKUP TAB -----------------
+
 function populateSettingsForm() {
   elements.setStoreName.value = state.settings.storeName || '';
   elements.setPhone.value = state.settings.phone || '';
@@ -933,7 +1471,6 @@ elements.settingsForm.addEventListener('submit', async (e) => {
   }
 });
 
-// Import JSON
 elements.importFileInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -956,9 +1493,8 @@ elements.importFileInput.addEventListener('change', async (e) => {
   reader.readAsText(file);
 });
 
-// Reset Demo Data
 elements.btnResetDemoData.addEventListener('click', async () => {
-  if (confirm("هل تريد استعادة البيانات النموذجية الافتراضية؟ سيتم تحديث المنتجات والفواتير التجريبية.")) {
+  if (confirm("هل تريد استعادة البيانات النموذجية الافتراضية؟ سيتم تحديث المنتجات والزبائن والفواتير.")) {
     try {
       await fetchAPI('/api/reset-demo', { method: 'POST' });
       showToast("✔ تمت استعادة البيانات النموذجية");

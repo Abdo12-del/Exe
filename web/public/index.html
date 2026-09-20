@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام تسيير المبيعات ونقاط البيع | Taseer POS</title>
+  <title>نظام تسيير المبيعات ونقاط البيع | Taseer POS Pro</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,8 +17,8 @@
         </svg>
       </div>
       <div>
-        <h1 class="brand-title" id="headerStoreName">متجر النور للمبيعات</h1>
-        <p class="brand-subtitle">نظام تسيير المبيعات ونقاط البيع الحديث (POS)</p>
+        <h1 class="brand-title" id="headerStoreName">متجر النور للمبيعات والتوزيع</h1>
+        <p class="brand-subtitle">نظام تسيير المبيعات ونقاط البيع الاحترافي (POS Pro)</p>
       </div>
     </div>
 
@@ -32,9 +32,17 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
         المخزون والمنتجات
       </button>
+      <button class="nav-tab" data-tab="customers">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        الزبائن والديون (الكريدي)
+      </button>
       <button class="nav-tab" data-tab="sales">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         سجل الفواتير
+      </button>
+      <button class="nav-tab" data-tab="register">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+        يومية الصندوق (Z)
       </button>
       <button class="nav-tab" data-tab="stats">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -50,7 +58,7 @@
     <div class="header-status">
       <span class="live-badge">
         <span class="pulse-dot"></span>
-        النظام جاهز ومباشر
+        النظام متصل
       </span>
       <span id="liveClock" style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem;"></span>
     </div>
@@ -99,6 +107,24 @@
             <button class="btn-clear-cart" id="btnClearCart">تفريغ السلة</button>
           </div>
 
+          <!-- Customer selector & payment method -->
+          <div style="padding: 0.6rem 1rem; background: #fff; border-bottom: 1px solid var(--border);">
+            <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.4rem;">
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); min-width: 50px;">الزبون:</label>
+              <select id="posCustomerSelect" class="form-control" style="padding: 0.35rem 0.6rem; font-size: 0.85rem;">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); min-width: 50px;">الدفع:</label>
+              <select id="posPaymentMethod" class="form-control" style="padding: 0.35rem 0.6rem; font-size: 0.85rem;">
+                <option value="cash">نقداً (Cash فوري)</option>
+                <option value="credit">على الحساب بالكامل (كريدي / دين)</option>
+                <option value="partial">دفع جزئي (تسبيق + باقي بالدين)</option>
+              </select>
+            </div>
+          </div>
+
           <div class="cart-body" id="cartItemsList">
             <!-- Items or empty state -->
           </div>
@@ -114,7 +140,7 @@
                 <label>تخفيض (دج):</label>
                 <input type="number" id="cartDiscount" value="0" min="0" step="10">
               </div>
-              <div class="pay-input-wrap">
+              <div class="pay-input-wrap" id="paidInputContainer">
                 <label>المبلغ المدفوع (دج):</label>
                 <input type="number" id="cartPaid" placeholder="المبلغ..." min="0" step="10">
               </div>
@@ -125,14 +151,19 @@
               <span id="cartTotal">0.00 دج</span>
             </div>
 
-            <div class="cart-calc-row" id="cartChangeRow" style="font-weight: 700; color: var(--secondary); margin-bottom: 0.75rem;">
+            <div class="cart-calc-row" id="cartChangeRow" style="font-weight: 700; color: var(--secondary); margin-bottom: 0.4rem;">
               <span>المتبقي للزبون:</span>
               <span id="cartChange">0.00 دج</span>
             </div>
 
+            <div class="cart-calc-row" id="cartDebtRow" style="font-weight: 700; color: var(--danger); margin-bottom: 0.75rem; display: none;">
+              <span>المبلغ المقيد كدين:</span>
+              <span id="cartDebtAmount">0.00 دج</span>
+            </div>
+
             <button class="btn-checkout" id="btnCheckout" disabled>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              إتمام البيع وطباعة الفاتورة
+              إتمام البيع واستخراج الفاتورة
             </button>
           </div>
         </div>
@@ -147,20 +178,24 @@
       <div class="action-bar">
         <div>
           <h2 class="action-bar-title">إدارة المنتجات والمخزون</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">تحكم في أسعار الشراء والبيع والكميات وحدود التنبيه</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">تحكم في الأسعار والتكلفة والكميات وطباعة الباركود</p>
         </div>
         <div class="action-bar-tools">
-          <input type="text" id="invSearchInput" class="form-control" style="width: 250px;" placeholder="بحث باسم المنتج أو الباركود...">
-          <select id="invCategoryFilter" class="form-control" style="width: 170px;">
+          <input type="text" id="invSearchInput" class="form-control" style="width: 220px;" placeholder="بحث باسم المنتج أو الباركود...">
+          <select id="invCategoryFilter" class="form-control" style="width: 150px;">
             <option value="all">كل التصنيفات</option>
           </select>
           <button class="btn btn-secondary" id="btnFilterLowStock">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            تنبيه المخزون المنخفض
+            تنبيه النقص
           </button>
+          <a href="/api/export/products-csv" class="btn btn-secondary" download title="تصدير إلى Excel">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            تصدير Excel
+          </a>
           <button class="btn btn-primary" id="btnOpenAddProduct">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            إضافة منتج جديد
+            إضافة منتج
           </button>
         </div>
       </div>
@@ -190,17 +225,91 @@
     </section>
 
     <!-- ==============================================
-         TAB 3: SALES HISTORY & INVOICES
+         TAB 3: CUSTOMERS & CREDIT (الزبائن والكريدي)
+    =============================================== -->
+    <section id="pane-customers" class="tab-pane">
+      <div class="action-bar">
+        <div>
+          <h2 class="action-bar-title">سجل الزبائن والديون (الكريدي)</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">إدارة حسابات الزبائن، متابعة المبيعات بالآجل، وتسجيل دفعات التسديد</p>
+        </div>
+        <div class="action-bar-tools">
+          <input type="text" id="custSearchInput" class="form-control" style="width: 240px;" placeholder="بحث باسم الزبون أو الهاتف...">
+          <button class="btn btn-secondary" id="btnFilterCustWithDebt">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            الزبائن المدينون فقط
+          </button>
+          <button class="btn btn-primary" id="btnOpenAddCustomer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            إضافة زبون جديد
+          </button>
+        </div>
+      </div>
+
+      <!-- Debt Summary Cards -->
+      <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 1.25rem;">
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-label">إجمالي ديون الزبائن المستحقة</span>
+            <span class="stat-card-value" id="kpiTotalDebts" style="color: var(--danger);">0 دج</span>
+            <span class="stat-card-badge" style="color: var(--text-muted);">مبالغ لم يتم تحصيلها بعد</span>
+          </div>
+          <div class="stat-card-icon icon-rose">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-label">عدد الزبائن المدينين</span>
+            <span class="stat-card-value" id="kpiDebtorsCount">0</span>
+            <span class="stat-card-badge" style="color: var(--accent);">زبائن لديهم فواتير غير مسددة</span>
+          </div>
+          <div class="stat-card-icon icon-amber">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>رقم</th>
+                <th>اسم الزبون</th>
+                <th>رقم الهاتف</th>
+                <th>العنوان</th>
+                <th>الدين الحالي</th>
+                <th>سقف الائتمان</th>
+                <th>ملاحظات</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================================
+         TAB 4: SALES HISTORY & INVOICES
     =============================================== -->
     <section id="pane-sales" class="tab-pane">
       <div class="action-bar">
         <div>
-          <h2 class="action-bar-title">سجل المبيعات والفواتير</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">أرشيف كامل لجميع عمليات البيع مع إمكانية استعراض وإعادة طباعة الفواتير</p>
+          <h2 class="action-bar-title">سجل الفواتير والمبيعات</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">أرشيف كامل للمبيعات مع إمكانية الفلترة وتصدير Excel وطباعة الفاتورة</p>
         </div>
         <div class="action-bar-tools">
-          <input type="text" id="salesSearchInput" class="form-control" style="width: 250px;" placeholder="بحث برقم الفاتورة أو اسم المنتج...">
-          <input type="date" id="salesDateFilter" class="form-control" style="width: 170px;">
+          <input type="text" id="salesSearchInput" class="form-control" style="width: 220px;" placeholder="بحث برقم الفاتورة أو الزبون...">
+          <input type="date" id="salesDateFilter" class="form-control" style="width: 160px;">
+          <a href="/api/export/sales-csv" class="btn btn-secondary" download title="تصدير إلى ملف Excel">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            تصدير Excel (CSV)
+          </a>
           <button class="btn btn-secondary" id="btnResetSalesFilter">إعادة ضبط</button>
         </div>
       </div>
@@ -212,11 +321,12 @@
               <tr>
                 <th>رقم الفاتورة</th>
                 <th>التاريخ والوقت</th>
+                <th>الزبون</th>
                 <th>عدد المواد</th>
                 <th>المجموع</th>
-                <th>التخفيض</th>
-                <th>الصافي المطلوب</th>
-                <th>الربح المحقق</th>
+                <th>المدفوع</th>
+                <th>الدين</th>
+                <th>الربح الصافي</th>
                 <th>طريقة الدفع</th>
                 <th>معاينة</th>
               </tr>
@@ -230,7 +340,81 @@
     </section>
 
     <!-- ==============================================
-         TAB 4: REPORTS & ANALYTICS
+         TAB 5: CASH DRAWER & DAILY REGISTER (يومية الصندوق)
+    =============================================== -->
+    <section id="pane-register" class="tab-pane">
+      <div class="action-bar">
+        <div>
+          <h2 class="action-bar-title">يومية الصندوق وإغلاق الكاشير (Z-Report)</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">مطابقة المبالغ النقدية في الدرج وحساب المقبوضات اليومية بدقة</p>
+        </div>
+        <button class="btn btn-secondary" id="btnRefreshRegister">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          تحديث الحسابات
+        </button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+        
+        <div class="table-card" style="padding: 1.5rem;">
+          <h3 style="margin-bottom: 1.25rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+            تفاصيل حركة الصندوق لليوم (<span id="regTodayDate"></span>)
+          </h3>
+
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="receipt-row" style="font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px dashed var(--border);">
+              <span>رصيد الصندوق الافتتاحي (Fond de caisse):</span>
+              <span id="regOpeningFloat" style="font-weight: 700;">10,000.00 دج</span>
+            </div>
+
+            <div class="receipt-row" style="font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px dashed var(--border);">
+              <span>مبيعات نقدية مقبوضة اليوم:</span>
+              <span id="regCashSales" style="font-weight: 700; color: var(--primary);">0.00 دج</span>
+            </div>
+
+            <div class="receipt-row" style="font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px dashed var(--border);">
+              <span>تحصيلات ديون سابقة (تسديدات نقدية):</span>
+              <span id="regDebtCollections" style="font-weight: 700; color: var(--secondary);">0.00 دج</span>
+            </div>
+
+            <div class="receipt-row" style="font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px dashed var(--border);">
+              <span>مبيعات بالآجل (ديون مسجلة اليوم):</span>
+              <span id="regCreditSales" style="font-weight: 700; color: var(--danger);">0.00 دج</span>
+            </div>
+
+            <div class="receipt-row grand-total" style="font-size: 1.35rem; padding: 1rem 0; background: var(--bg-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-md);">
+              <span>النقد المفترض وجوده في الصندوق حالياً:</span>
+              <span id="regExpectedCash" style="color: var(--primary-dark); font-weight: 800;">0.00 دج</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Z-Report Action Card -->
+        <div class="table-card" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="font-weight: 700; margin-bottom: 0.75rem;">إغلاق اليومية (Rapport Z)</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
+              عند نهاية دوام العمل، يمكنك طباعة تقرير إغلاق الصندوق الشامل (Z-Report) ومقارنة المبلغ الفعلي الموجود في الدرج مع الحساب الآلي لضبط أي فارق أو عجز.
+            </p>
+            <div style="background: var(--bg-subtle); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+              <div style="font-size: 0.8rem; color: var(--text-muted);">عدد فواتير اليوم:</div>
+              <div id="regInvoicesCount" style="font-size: 1.2rem; font-weight: 700;">0 فاتورة</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">صافي الأرباح المحققة:</div>
+              <div id="regTodayProfit" style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">0.00 دج</div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="btnPrintZReport" style="width: 100%; justify-content: center; padding: 0.85rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            معاينة وطباعة تقرير الصندوق (Z)
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==============================================
+         TAB 6: REPORTS & ANALYTICS
     =============================================== -->
     <section id="pane-stats" class="tab-pane">
       <div class="action-bar">
@@ -336,7 +520,7 @@
     </section>
 
     <!-- ==============================================
-         TAB 5: SETTINGS & BACKUP
+         TAB 7: SETTINGS & BACKUP
     =============================================== -->
     <section id="pane-settings" class="tab-pane">
       <div class="action-bar">
@@ -380,7 +564,7 @@
           <div>
             <h3 style="margin-bottom: 1rem; font-weight: 700;">إدارة قاعدة البيانات والنسخ الاحتياطي</h3>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-              يمكنك تصدير نسخة احتياطية من كل المنتجات والفواتير والإعدادات كملف JSON واسترجاعها في أي وقت دون فقدان أي بيانات.
+              يمكنك تصدير نسخة احتياطية من كل المنتجات والزبائن والفواتير والإعدادات كملف JSON واسترجاعها في أي وقت دون فقدان أي بيانات.
             </p>
 
             <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -471,23 +655,147 @@
     </div>
   </div>
 
-  <!-- Thermal Receipt Modal -->
+  <!-- Add/Edit Customer Modal -->
+  <div class="modal-overlay" id="customerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="customerModalTitle">إضافة زبون جديد</h3>
+        <button class="modal-close" id="btnCloseCustomerModal">&times;</button>
+      </div>
+      <form id="customerForm">
+        <div class="modal-body">
+          <input type="hidden" id="custId">
+          <div class="form-group">
+            <label>اسم الزبون الكامل: *</label>
+            <input type="text" id="custName" class="form-control" required placeholder="مثال: محمد العمري">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>رقم الهاتف:</label>
+              <input type="text" id="custPhone" class="form-control" placeholder="0661 ...">
+            </div>
+            <div class="form-group">
+              <label>سقف الدين المسموح (دج):</label>
+              <input type="number" id="custCreditLimit" class="form-control" value="20000" min="0" step="1000">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>العنوان:</label>
+            <input type="text" id="custAddress" class="form-control" placeholder="الحي، المدينة...">
+          </div>
+          <div class="form-group">
+            <label>ملاحظات:</label>
+            <input type="text" id="custNotes" class="form-control" placeholder="ملاحظات حول طريقة التسديد...">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelCustomerModal">إلغاء</button>
+          <button type="submit" class="btn btn-primary">حفظ بيانات الزبون</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Customer Debt Repayment Modal (تسديد دين) -->
+  <div class="modal-overlay" id="repayModal">
+    <div class="modal-content" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title">تسجيل دفعة تسديد دين (Règlement)</h3>
+        <button class="modal-close" id="btnCloseRepayModal">&times;</button>
+      </div>
+      <form id="repayForm">
+        <div class="modal-body">
+          <input type="hidden" id="repayCustId">
+          <div style="background: var(--bg-subtle); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+            <div style="font-size: 0.85rem; color: var(--text-muted);">اسم الزبون:</div>
+            <div id="repayCustName" style="font-size: 1.15rem; font-weight: 700;">—</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">الدين الحالي المستحق:</div>
+            <div id="repayCustCurrentDebt" style="font-size: 1.35rem; font-weight: 800; color: var(--danger);">0.00 دج</div>
+          </div>
+
+          <div class="form-group">
+            <label>المبلغ المدفوع للتسديد (دج): *</label>
+            <input type="number" id="repayAmount" class="form-control" min="1" step="10" required style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">
+          </div>
+          <div class="form-group">
+            <label>ملاحظة أو بيان:</label>
+            <input type="text" id="repayNote" class="form-control" value="تسديد نقدي في المحل">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelRepayModal">إلغاء</button>
+          <button type="submit" class="btn btn-primary">تأكيد التسديد وتحديث الرصيد</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Customer Statement Modal (كشف حساب) -->
+  <div class="modal-overlay" id="statementModal">
+    <div class="modal-content" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="statementTitle">كشف حساب الزبون</h3>
+        <button class="modal-close" id="btnCloseStatementModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; background: var(--bg-subtle); padding: 1rem; border-radius: var(--radius-md);">
+          <div>
+            <div id="stmtCustName" style="font-weight: 700; font-size: 1.1rem;"></div>
+            <div id="stmtCustPhone" style="font-size: 0.85rem; color: var(--text-muted);"></div>
+          </div>
+          <div style="text-align: left;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">الرصيد المتبقي بذمته:</div>
+            <div id="stmtCustDebt" style="font-size: 1.35rem; font-weight: 800; color: var(--danger);">0 دج</div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem;">سجل العمليات والفواتير:</h4>
+        <div style="max-height: 250px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-md);">
+          <table class="data-table" style="font-size: 0.85rem;">
+            <thead>
+              <tr>
+                <th>التاريخ</th>
+                <th>البيان</th>
+                <th>المبلغ</th>
+                <th>المدفوع</th>
+                <th>الدين</th>
+              </tr>
+            </thead>
+            <tbody id="stmtHistoryBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btnCloseStmtBtn">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unified Thermal / A4 Receipt Modal -->
   <div class="modal-overlay receipt-modal-wrapper" id="receiptModal">
-    <div class="modal-content" style="max-width: 420px;">
+    <div class="modal-content" style="max-width: 580px;">
       <div class="modal-header no-print">
-        <h3 class="modal-title">معاينة الفاتورة الحرارية</h3>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <h3 class="modal-title">معاينة الفاتورة</h3>
+          <div style="display: flex; gap: 0.25rem; background: var(--bg-subtle); padding: 0.2rem; border-radius: var(--radius-sm);">
+            <button class="nav-tab active" id="btnViewThermal" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;">إيصال حراري (80mm)</button>
+            <button class="nav-tab" id="btnViewA4" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;">فاتورة رسمية (A4)</button>
+          </div>
+        </div>
         <button class="modal-close" id="btnCloseReceiptModal">&times;</button>
       </div>
-      <div class="modal-body" style="background: #e2e8f0; padding: 1rem;">
+
+      <div class="modal-body" style="background: #e2e8f0; padding: 1rem; overflow-y: auto;">
         
-        <!-- Thermal Receipt Paper -->
+        <!-- View 1: Thermal Receipt Paper (80mm) -->
         <div class="receipt-paper" id="receiptPaper">
           <div class="receipt-header">
-            <div class="receipt-store-name" id="recStoreName">متجر النور للمبيعات</div>
+            <div class="receipt-store-name" id="recStoreName">متجر النور للمبيعات والتوزيع</div>
             <div class="receipt-meta" id="recStoreAddress">شارع الاستقلال، الخروب</div>
             <div class="receipt-meta" id="recStorePhone">هاتف: 0550 12 34 56</div>
             <div style="margin-top: 6px; font-weight: bold;" id="recInvoiceNum">فاتورة رقم: INV-2026-0001</div>
             <div class="receipt-meta" id="recDate">التاريخ: 2026-09-20 12:00</div>
+            <div class="receipt-meta" id="recCustName" style="font-weight: 600; margin-top: 2px;">الزبون: زبون عابر</div>
           </div>
 
           <table class="receipt-table">
@@ -521,9 +829,13 @@
               <span>المبلغ المدفوع:</span>
               <span id="recPaid">0.00 دج</span>
             </div>
-            <div class="receipt-row">
+            <div class="receipt-row" id="recChangeRow">
               <span>المتبقي للزبون:</span>
               <span id="recChange">0.00 دج</span>
+            </div>
+            <div class="receipt-row" id="recDebtRow" style="color: #b91c1c; font-weight: bold; display: none;">
+              <span>المتبقي بالدين:</span>
+              <span id="recDebt">0.00 دج</span>
             </div>
           </div>
 
@@ -534,12 +846,82 @@
           </div>
         </div>
 
+        <!-- View 2: A4 Full Size Invoice Container -->
+        <div id="a4InvoiceContainer" style="display: none; background: #fff; padding: 2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); color: #000;">
+          <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #059669; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+            <div>
+              <h2 id="a4StoreName" style="color: #059669; font-size: 1.4rem; font-weight: 800;">متجر النور للمبيعات</h2>
+              <div id="a4StoreAddress" style="font-size: 0.85rem; color: #555;">شارع الاستقلال، الخروب - قسنطينة</div>
+              <div id="a4StorePhone" style="font-size: 0.85rem; color: #555;">الهاتف: 0550 12 34 56</div>
+            </div>
+            <div style="text-align: left;">
+              <h1 style="font-size: 1.5rem; color: #1e293b; margin-bottom: 0.25rem;">فاتورة مبيعات</h1>
+              <div id="a4InvoiceNum" style="font-weight: 700; color: #059669;">INV-2026-0001</div>
+              <div id="a4Date" style="font-size: 0.85rem; color: #555;">2026-09-20 12:00</div>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+            <div>
+              <span style="font-size: 0.85rem; color: #64748b;">اسم الزبون / العميل:</span>
+              <strong id="a4CustName" style="display: block; font-size: 1.05rem;">زبون عابر</strong>
+            </div>
+            <div>
+              <span style="font-size: 0.85rem; color: #64748b;">طريقة الدفع:</span>
+              <strong id="a4PayMethod" style="display: block; font-size: 1.05rem;">نقداً</strong>
+            </div>
+          </div>
+
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;">
+            <thead>
+              <tr style="background: #059669; color: white;">
+                <th style="padding: 0.6rem 0.75rem; text-align: right;">الرقم</th>
+                <th style="padding: 0.6rem 0.75rem; text-align: right;">بيان المادة</th>
+                <th style="padding: 0.6rem 0.75rem; text-align: center;">الكمية</th>
+                <th style="padding: 0.6rem 0.75rem; text-align: left;">سعر الوحدة</th>
+                <th style="padding: 0.6rem 0.75rem; text-align: left;">المجموع</th>
+              </tr>
+            </thead>
+            <tbody id="a4ItemsBody"></tbody>
+          </table>
+
+          <div style="display: flex; justify-content: flex-end; margin-bottom: 2rem;">
+            <div style="width: 260px;">
+              <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid #e2e8f0;">
+                <span>المجموع الفرعي:</span>
+                <span id="a4Subtotal" style="font-weight: 600;">0.00 دج</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid #e2e8f0;" id="a4DiscountRow">
+                <span>التخفيض:</span>
+                <span id="a4Discount" style="font-weight: 600; color: #d97706;">0.00 دج</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 1.15rem; font-weight: 800; color: #059669; border-bottom: 2px solid #059669;">
+                <span>الإجمالي الصافي:</span>
+                <span id="a4Total">0.00 دج</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.35rem 0;">
+                <span>المسدد:</span>
+                <span id="a4Paid" style="font-weight: 600;">0.00 دج</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; color: #dc2626;" id="a4DebtRow">
+                <span>المتبقي بالدين:</span>
+                <span id="a4Debt" style="font-weight: 700;">0.00 دج</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; border-top: 1px dashed #cbd5e1; padding-top: 1rem; font-size: 0.85rem; color: #64748b;">
+            <div>توقيع واستلام الزبون: ....................</div>
+            <div>ختم وتوقيع المؤسسة: ....................</div>
+          </div>
+        </div>
+
       </div>
       <div class="modal-footer no-print">
         <button type="button" class="btn btn-secondary" id="btnDoneReceipt">إغلاق</button>
         <button type="button" class="btn btn-primary" id="btnPrintReceipt">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-          طباعة الإيصال (Print)
+          طباعة الفاتورة (Print)
         </button>
       </div>
     </div>

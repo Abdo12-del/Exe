@@ -1012,7 +1012,9 @@ body {
   body * {
     visibility: hidden;
   }
-  .receipt-modal-wrapper, .receipt-paper, .receipt-paper * {
+  .receipt-modal-wrapper, 
+  .receipt-paper, .receipt-paper *,
+  #a4InvoiceContainer, #a4InvoiceContainer * {
     visibility: visible;
   }
   .receipt-paper {
@@ -1024,6 +1026,16 @@ body {
     box-shadow: none !important;
     padding: 0 !important;
     margin: 0 !important;
+  }
+  #a4InvoiceContainer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 210mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 20mm 15mm !important;
   }
   .no-print {
     display: none !important;

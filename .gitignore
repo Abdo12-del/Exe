@@ -2,6 +2,10 @@
 dist/*
 !dist/taseer.exe
 
+# Node modules
+node_modules/
+**/node_modules/
+
 # ملفات مؤقتة
 *.o
 *.obj
