@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام تسيير المبيعات ونقاط البيع | Taseer POS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top App Navigation -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title" id="headerStoreName">متجر النور للمبيعات</h1>
+        <p class="brand-subtitle">نظام تسيير المبيعات ونقاط البيع الحديث (POS)</p>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="pos">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+        نقطة البيع (الكاشير)
+      </button>
+      <button class="nav-tab" data-tab="products">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+        المخزون والمنتجات
+      </button>
+      <button class="nav-tab" data-tab="sales">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        سجل الفواتير
+      </button>
+      <button class="nav-tab" data-tab="stats">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        التقارير والأرباح
+      </button>
+      <button class="nav-tab" data-tab="settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        الإعدادات والنسخ
+      </button>
+    </nav>
+
+    <!-- Header Actions & Clock -->
+    <div class="header-status">
+      <span class="live-badge">
+        <span class="pulse-dot"></span>
+        النظام جاهز ومباشر
+      </span>
+      <span id="liveClock" style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem;"></span>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="app-main">
+
+    <!-- ==============================================
+         TAB 1: POS CASHIER
+    =============================================== -->
+    <section id="pane-pos" class="tab-pane active">
+      <div class="pos-container">
+        
+        <!-- Right side: Catalog -->
+        <div class="pos-catalog">
+          <div class="search-bar-row">
+            <div class="search-input-wrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="posSearchInput" class="search-input" placeholder="امسح الباركود أو ابحث عن المنتج... (اضغط Enter للإضافة السريعة)">
+            </div>
+            <button class="btn btn-secondary" id="btnFocusSearch" title="تركيز قارئ الباركود">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
+              قارئ الباركود
+            </button>
+          </div>
+
+          <!-- Category filter pills -->
+          <div class="category-pills" id="posCategoryPills">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Product Grid -->
+          <div class="products-grid" id="posProductsGrid">
+            <!-- Cards populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Left side: Cart -->
+        <div class="pos-cart">
+          <div class="cart-header">
+            <div class="cart-title">
+              <span>سلة المبيعات</span>
+              <span class="cart-items-count" id="cartCount">0 مواد</span>
+            </div>
+            <button class="btn-clear-cart" id="btnClearCart">تفريغ السلة</button>
+          </div>
+
+          <div class="cart-body" id="cartItemsList">
+            <!-- Items or empty state -->
+          </div>
+
+          <div class="cart-footer">
+            <div class="cart-calc-row">
+              <span>المجموع الفرعي:</span>
+              <span id="cartSubtotal">0.00 دج</span>
+            </div>
+            
+            <div class="pay-inputs">
+              <div class="pay-input-wrap">
+                <label>تخفيض (دج):</label>
+                <input type="number" id="cartDiscount" value="0" min="0" step="10">
+              </div>
+              <div class="pay-input-wrap">
+                <label>المبلغ المدفوع (دج):</label>
+                <input type="number" id="cartPaid" placeholder="المبلغ..." min="0" step="10">
+              </div>
+            </div>
+
+            <div class="cart-calc-row total-row">
+              <span>الإجمالي المطلوب:</span>
+              <span id="cartTotal">0.00 دج</span>
+            </div>
+
+            <div class="cart-calc-row" id="cartChangeRow" style="font-weight: 700; color: var(--secondary); margin-bottom: 0.75rem;">
+              <span>المتبقي للزبون:</span>
+              <span id="cartChange">0.00 دج</span>
+            </div>
+
+            <button class="btn-checkout" id="btnCheckout" disabled>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              إتمام البيع وطباعة الفاتورة
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==============================================
+         TAB 2: PRODUCTS & INVENTORY
+    =============================================== -->
+    <section id="pane-products" class="tab-pane">
+      <div class="action-bar">
+        <div>
+          <h2 class="action-bar-title">إدارة المنتجات والمخزون</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">تحكم في أسعار الشراء والبيع والكميات وحدود التنبيه</p>
+        </div>
+        <div class="action-bar-tools">
+          <input type="text" id="invSearchInput" class="form-control" style="width: 250px;" placeholder="بحث باسم المنتج أو الباركود...">
+          <select id="invCategoryFilter" class="form-control" style="width: 170px;">
+            <option value="all">كل التصنيفات</option>
+          </select>
+          <button class="btn btn-secondary" id="btnFilterLowStock">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            تنبيه المخزون المنخفض
+          </button>
+          <button class="btn btn-primary" id="btnOpenAddProduct">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            إضافة منتج جديد
+          </button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>الباركود</th>
+                <th>اسم المنتج</th>
+                <th>التصنيف</th>
+                <th>سعر الشراء</th>
+                <th>سعر البيع</th>
+                <th>هامش الربح</th>
+                <th>المخزون</th>
+                <th>الحالة</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================================
+         TAB 3: SALES HISTORY & INVOICES
+    =============================================== -->
+    <section id="pane-sales" class="tab-pane">
+      <div class="action-bar">
+        <div>
+          <h2 class="action-bar-title">سجل المبيعات والفواتير</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">أرشيف كامل لجميع عمليات البيع مع إمكانية استعراض وإعادة طباعة الفواتير</p>
+        </div>
+        <div class="action-bar-tools">
+          <input type="text" id="salesSearchInput" class="form-control" style="width: 250px;" placeholder="بحث برقم الفاتورة أو اسم المنتج...">
+          <input type="date" id="salesDateFilter" class="form-control" style="width: 170px;">
+          <button class="btn btn-secondary" id="btnResetSalesFilter">إعادة ضبط</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>رقم الفاتورة</th>
+                <th>التاريخ والوقت</th>
+                <th>عدد المواد</th>
+                <th>المجموع</th>
+                <th>التخفيض</th>
+                <th>الصافي المطلوب</th>
+                <th>الربح المحقق</th>
+                <th>طريقة الدفع</th>
+                <th>معاينة</th>
+              </tr>
+            </thead>
+            <tbody id="salesTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================================
+         TAB 4: REPORTS & ANALYTICS
+    =============================================== -->
+    <section id="pane-stats" class="tab-pane">
+      <div class="action-bar">
+        <div>
+          <h2 class="action-bar-title">التقارير والمؤشرات المالية</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">تحليل ذكي للأرباح، المبيعات اليومية، والمنتجات الأكثر طلباً</p>
+        </div>
+        <button class="btn btn-secondary" id="btnRefreshStats">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          تحديث المؤشرات
+        </button>
+      </div>
+
+      <!-- KPI Cards Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-label">مبيعات اليوم</span>
+            <span class="stat-card-value" id="kpiTodaySales">0 دج</span>
+            <span class="stat-card-badge" id="kpiTodayCount" style="color: var(--primary);">0 فواتير</span>
+          </div>
+          <div class="stat-card-icon icon-emerald">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-label">صافي أرباح اليوم</span>
+            <span class="stat-card-value" id="kpiTodayProfit">0 دج</span>
+            <span class="stat-card-badge" style="color: var(--primary);">هامش الربح الحقيقي</span>
+          </div>
+          <div class="stat-card-icon icon-blue">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-label">إجمالي المبيعات الكلي</span>
+            <span class="stat-card-value" id="kpiTotalSales">0 دج</span>
+            <span class="stat-card-badge" id="kpiTotalInvoices" style="color: var(--text-muted);">0 عملية بيع</span>
+          </div>
+          <div class="stat-card-icon icon-amber">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-label">حالة المخزون</span>
+            <span class="stat-card-value" id="kpiStockAlerts">0</span>
+            <span class="stat-card-badge" style="color: var(--danger);">مواد تتطلب إعادة طلب</span>
+          </div>
+          <div class="stat-card-icon icon-rose">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3 class="chart-card-title">تطور المبيعات والأرباح (آخر 7 أيام)</h3>
+          </div>
+          <div style="height: 280px; position: relative;">
+            <canvas id="salesTimelineChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3 class="chart-card-title">المنتجات الأكثر مبيعاً</h3>
+          </div>
+          <div style="height: 280px; position: relative;">
+            <canvas id="topProductsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Valuation summary -->
+      <div class="stat-card" style="margin-top: 1rem;">
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap; width: 100%; justify-content: space-around;">
+          <div style="text-align: center;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">إجمالي الأصناف بالمخزن</div>
+            <div id="statTotalItems" style="font-size: 1.4rem; font-weight: 700;">0</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">قيمة المخزون بسعر الشراء</div>
+            <div id="statBuyVal" style="font-size: 1.4rem; font-weight: 700; color: var(--text-muted);">0 دج</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">قيمة المخزون بسعر البيع</div>
+            <div id="statSellVal" style="font-size: 1.4rem; font-weight: 700; color: var(--primary);">0 دج</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">الأرباح الكامنة في المخزون</div>
+            <div id="statPotentialProfit" style="font-size: 1.4rem; font-weight: 700; color: var(--secondary);">0 دج</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================================
+         TAB 5: SETTINGS & BACKUP
+    =============================================== -->
+    <section id="pane-settings" class="tab-pane">
+      <div class="action-bar">
+        <div>
+          <h2 class="action-bar-title">إعدادات المتجر والبيانات</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">تخصيص بيانات الفاتورة والنسخ الاحتياطي وإعادة التهيئة</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="table-card" style="padding: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; font-weight: 700;">بيانات المتجر والفاتورة</h3>
+          <form id="settingsForm">
+            <div class="form-group">
+              <label>اسم المحل / المتجر:</label>
+              <input type="text" id="setStoreName" class="form-control" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>رقم الهاتف:</label>
+                <input type="text" id="setPhone" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>العملة:</label>
+                <input type="text" id="setCurrency" class="form-control" value="دج">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>العنوان الكامل:</label>
+              <input type="text" id="setAddress" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>تذييل الفاتورة (ملاحظة أسفل الإيصال):</label>
+              <textarea id="setReceiptFooter" class="form-control" rows="2"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">حفظ الإعدادات</button>
+          </form>
+        </div>
+
+        <div class="table-card" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin-bottom: 1rem; font-weight: 700;">إدارة قاعدة البيانات والنسخ الاحتياطي</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+              يمكنك تصدير نسخة احتياطية من كل المنتجات والفواتير والإعدادات كملف JSON واسترجاعها في أي وقت دون فقدان أي بيانات.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              <a href="/api/export" class="btn btn-secondary" style="justify-content: center;" download>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                تصدير نسخة احتياطية كاملة (Backup JSON)
+              </a>
+
+              <div style="border-top: 1px dashed var(--border); padding-top: 1rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">استيراد نسخة احتياطية:</label>
+                <input type="file" id="importFileInput" accept=".json" class="form-control">
+              </div>
+
+              <div style="border-top: 1px dashed var(--border); padding-top: 1rem;">
+                <button type="button" class="btn btn-secondary" id="btnResetDemoData" style="width: 100%; justify-content: center; color: var(--accent);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                  إعادة شحن البيانات النموذجية (Demo Sample Data)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==============================================
+       MODALS
+  =============================================== -->
+
+  <!-- Add/Edit Product Modal -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="productModalTitle">إضافة منتج جديد</h3>
+        <button class="modal-close" id="btnCloseProductModal">&times;</button>
+      </div>
+      <form id="productForm">
+        <div class="modal-body">
+          <input type="hidden" id="prodId">
+          <div class="form-group">
+            <label>اسم المنتج: *</label>
+            <input type="text" id="prodName" class="form-control" required placeholder="مثال: زيت زيتون 1 لتر">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>الباركود (رقم الترميز):</label>
+              <input type="text" id="prodBarcode" class="form-control" placeholder="613...">
+            </div>
+            <div class="form-group">
+              <label>التصنيف:</label>
+              <select id="prodCategory" class="form-control">
+                <option value="food">مواد غذائية</option>
+                <option value="drinks">مشروبات وعصائر</option>
+                <option value="dairy">ألبان وأجبان</option>
+                <option value="sweets">حلويات وبسكويت</option>
+                <option value="cleaning">منظفات ومستلزمات</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>سعر الشراء (التكلفة دج):</label>
+              <input type="number" id="prodBuyPrice" class="form-control" min="0" step="1" required>
+            </div>
+            <div class="form-group">
+              <label>سعر البيع للزبون (دج): *</label>
+              <input type="number" id="prodSellPrice" class="form-control" min="0" step="1" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>الكمية المتوفرة في المخزن: *</label>
+              <input type="number" id="prodStock" class="form-control" min="0" step="1" required>
+            </div>
+            <div class="form-group">
+              <label>حد التنبيه (أدنى مخزون):</label>
+              <input type="number" id="prodMinStock" class="form-control" min="0" value="5">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelProductModal">إلغاء</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveProduct">حفظ المنتج</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Thermal Receipt Modal -->
+  <div class="modal-overlay receipt-modal-wrapper" id="receiptModal">
+    <div class="modal-content" style="max-width: 420px;">
+      <div class="modal-header no-print">
+        <h3 class="modal-title">معاينة الفاتورة الحرارية</h3>
+        <button class="modal-close" id="btnCloseReceiptModal">&times;</button>
+      </div>
+      <div class="modal-body" style="background: #e2e8f0; padding: 1rem;">
+        
+        <!-- Thermal Receipt Paper -->
+        <div class="receipt-paper" id="receiptPaper">
+          <div class="receipt-header">
+            <div class="receipt-store-name" id="recStoreName">متجر النور للمبيعات</div>
+            <div class="receipt-meta" id="recStoreAddress">شارع الاستقلال، الخروب</div>
+            <div class="receipt-meta" id="recStorePhone">هاتف: 0550 12 34 56</div>
+            <div style="margin-top: 6px; font-weight: bold;" id="recInvoiceNum">فاتورة رقم: INV-2026-0001</div>
+            <div class="receipt-meta" id="recDate">التاريخ: 2026-09-20 12:00</div>
+          </div>
+
+          <table class="receipt-table">
+            <thead>
+              <tr>
+                <th>المادة</th>
+                <th style="text-align: center;">الكمية</th>
+                <th style="text-align: left;">السعر</th>
+                <th style="text-align: left;">المجموع</th>
+              </tr>
+            </thead>
+            <tbody id="recItemsBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+
+          <div class="receipt-totals">
+            <div class="receipt-row">
+              <span>المجموع الفرعي:</span>
+              <span id="recSubtotal">0.00 دج</span>
+            </div>
+            <div class="receipt-row" id="recDiscountRow">
+              <span>التخفيض:</span>
+              <span id="recDiscount">0.00 دج</span>
+            </div>
+            <div class="receipt-row grand-total">
+              <span>المبلغ الإجمالي:</span>
+              <span id="recTotal">0.00 دج</span>
+            </div>
+            <div class="receipt-row">
+              <span>المبلغ المدفوع:</span>
+              <span id="recPaid">0.00 دج</span>
+            </div>
+            <div class="receipt-row">
+              <span>المتبقي للزبون:</span>
+              <span id="recChange">0.00 دج</span>
+            </div>
+          </div>
+
+          <div class="receipt-barcode">
+            <div class="receipt-barcode-lines"></div>
+            <div style="font-size: 10px; letter-spacing: 2px;" id="recBarcodeCode">INV-2026-0001</div>
+            <div style="font-size: 10px; margin-top: 6px;" id="recFooterMsg">شكراً لزيارتكم! مرحباً بكم دائماً.</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer no-print">
+        <button type="button" class="btn btn-secondary" id="btnDoneReceipt">إغلاق</button>
+        <button type="button" class="btn btn-primary" id="btnPrintReceipt">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          طباعة الإيصال (Print)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="vendor/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
