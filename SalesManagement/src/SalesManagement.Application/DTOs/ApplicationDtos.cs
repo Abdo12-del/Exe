@@ -158,8 +158,8 @@ public record CashRegisterStatusDto(
 
 // --- Expense DTOs ---
 public record ExpenseCategoryDto(int Id, string Name, string? Description);
-public record ExpenseDto(int Id, string ExpenseNumber, string CategoryName, DateTime Date, decimal Amount, string PaymentMethod, string? Beneficiary, string? Notes);
-public record CreateExpenseDto(int CategoryId, decimal Amount, PaymentMethod PaymentMethod, int? CashRegisterId, int UserId, string? Beneficiary, string? Notes);
+public record ExpenseDto(long Id, string ExpenseNumber, string CategoryName, DateTime Date, decimal Amount, string Title, string? Notes);
+public record CreateExpenseDto(int CategoryId, decimal Amount, int? CashRegisterId, int UserId, string Title, string? Notes);
 
 // --- Inventory Count DTOs ---
 public record InventoryCountItemDto(int ProductId, string ProductName, string Barcode, decimal ExpectedQuantity, decimal CountedQuantity, decimal Difference);

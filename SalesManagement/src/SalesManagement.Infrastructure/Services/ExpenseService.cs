@@ -25,7 +25,7 @@ public class ExpenseService : IExpenseService
     {
         return await _context.ExpenseCategories
             .AsNoTracking()
-            .Select(c => new ExpenseCategoryDto(c.Id, c.Name, c.Description))
+            .Select(c => new ExpenseCategoryDto(c.Id, c.NameAr, c.Description))
             .ToListAsync();
     }
 
@@ -44,11 +44,10 @@ public class ExpenseService : IExpenseService
         return list.Select(e => new ExpenseDto(
             e.Id,
             e.ExpenseNumber,
-            e.Category.Name,
+            e.Category.NameAr,
             e.Timestamp,
             e.Amount,
-            e.PaymentMethod.ToString(),
-            e.Beneficiary,
+            e.Title,
             e.Notes
         )).ToList();
     }
@@ -74,15 +73,14 @@ public class ExpenseService : IExpenseService
                 UserId = dto.UserId,
                 Timestamp = DateTime.UtcNow,
                 Amount = dto.Amount,
-                PaymentMethod = dto.PaymentMethod,
-                Beneficiary = dto.Beneficiary,
+                Title = string.IsNullOrWhiteSpace(dto.Title) ? category.NameAr : dto.Title.Trim(),
                 Notes = dto.Notes
             };
 
             _context.Expenses.Add(expense);
 
-            // Deduct cash from drawer if paid in cash
-            if (dto.CashRegisterId.HasValue && dto.PaymentMethod == PaymentMethod.Cash)
+            // Deduct cash from drawer when a cash register is specified
+            if (dto.CashRegisterId.HasValue)
             {
                 var reg = await _context.CashRegisters.FindAsync(dto.CashRegisterId.Value);
                 if (reg != null)
@@ -97,7 +95,7 @@ public class ExpenseService : IExpenseService
                         Amount = -dto.Amount,
                         BalanceAfter = reg.CurrentBalance,
                         ReferenceDocumentType = "Expense",
-                        Notes = $"مصروف: {category.Name} - {dto.Notes}"
+                        Notes = $"مصروف: {category.NameAr} - {dto.Notes}"
                     });
                 }
             }
@@ -105,7 +103,7 @@ public class ExpenseService : IExpenseService
             await _context.SaveChangesAsync();
 
             var user = await _context.Users.FindAsync(dto.UserId);
-            await _auditService.LogAsync(dto.UserId, user?.Username ?? "Unknown", "CreateExpense", "Expense", expense.Id.ToString(), null, new { expNum, dto.Amount, category = category.Name });
+            await _auditService.LogAsync(dto.UserId, user?.Username ?? "Unknown", "CreateExpense", "Expense", expense.Id.ToString(), null, new { expNum, dto.Amount, category = category.NameAr });
 
             await _unitOfWork.CommitAsync();
 
@@ -120,7 +118,7 @@ public class ExpenseService : IExpenseService
 
     public async Task<ExpenseCategory> CreateCategoryAsync(string name, string? description)
     {
-        var category = new ExpenseCategory { Name = name.Trim(), Description = description?.Trim() };
+        var category = new ExpenseCategory { NameAr = name.Trim(), Description = description?.Trim() };
         _context.ExpenseCategories.Add(category);
         await _context.SaveChangesAsync();
         return category;
