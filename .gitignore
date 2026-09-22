@@ -1,0 +1,35 @@
+# Visual Studio / .NET Build Outputs
+bin/
+obj/
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Distribution
+dist/
+dist/*
+!dist/*.iss
+!dist/*.exe
+
+# MySQL Local Data Files
+**/mysql/data/
+**/mysql/data/*
+**/mysql/*.zip
+**/mysql/temp_extract/
+
+# Logs
+logs/
+*.log
+
+# Node & Web
+node_modules/
+**/node_modules/
+
+# Temporary
+*.o
+*.obj
+taseer_data.json

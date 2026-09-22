@@ -1,0 +1,28 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Brand & System -->
+    <system:String x:Key="Str_AppName">تاجر برو</system:String>
+    <system:String x:Key="Str_AppTagline">نظام إدارة المبيعات ونقاط البيع والمخزون</system:String>
+    <system:String x:Key="Str_Currency">دج</system:String>
+
+    <!-- Navigation -->
+    <system:String x:Key="Nav_Dashboard">لوحة القيادة والمؤشرات</system:String>
+    <system:String x:Key="Nav_POS">نقطة البيع (الكاشير)</system:String>
+    <system:String x:Key="Nav_Products">إدارة المخزون والمنتجات</system:String>
+    <system:String x:Key="Nav_Sales">سجل الفواتير والمبيعات</system:String>
+    <system:String x:Key="Nav_Customers">الزبائن والديون (الكريدي)</system:String>
+    <system:String x:Key="Nav_Suppliers">الموردين والمشتريات</system:String>
+    <system:String x:Key="Nav_CashRegister">الصندوق واليومية (Z-Report)</system:String>
+    <system:String x:Key="Nav_Expenses">المصاريف والنفقات اليومية</system:String>
+    <system:String x:Key="Nav_Settings">الإعدادات والنسخ الاحتياطي</system:String>
+
+    <!-- Common Actions -->
+    <system:String x:Key="Btn_Save">حفظ</system:String>
+    <system:String x:Key="Btn_Cancel">إلغاء</system:String>
+    <system:String x:Key="Btn_Delete">حذف</system:String>
+    <system:String x:Key="Btn_Print">طباعة</system:String>
+    <system:String x:Key="Btn_Search">بحث</system:String>
+    <system:String x:Key="Btn_Refresh">تحديث</system:String>
+</ResourceDictionary>

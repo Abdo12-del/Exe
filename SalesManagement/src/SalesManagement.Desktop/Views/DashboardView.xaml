@@ -1,0 +1,132 @@
+<UserControl x:Class="SalesManagement.Desktop.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <!-- Top KPI Cards -->
+                <RowDefinition Height="Auto"/> <!-- Secondary KPI Cards -->
+                <RowDefinition Height="*"/>    <!-- Tables / Charts Grid -->
+            </Grid.RowDefinitions>
+
+            <!-- Row 1: Primary KPIs -->
+            <Grid Grid.Row="0" Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Card 1: Today's Sales -->
+                <Border Grid.Column="0" Style="{StaticResource KpiCard}" BorderBrush="#3B82F6">
+                    <StackPanel>
+                        <TextBlock Text="مبيعات اليوم" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding TodaySales, StringFormat='{}{0:N2} دج'}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" Margin="0,6,0,0"/>
+                        <TextBlock Text="{Binding TodayInvoices, StringFormat='{}عدد الفواتير: {0}'}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Card 2: Today's Profit -->
+                <Border Grid.Column="1" Style="{StaticResource KpiCard}" BorderBrush="#16A34A">
+                    <StackPanel>
+                        <TextBlock Text="صافي أرباح اليوم" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding TodayProfit, StringFormat='{}{0:N2} دج'}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" Margin="0,6,0,0"/>
+                        <TextBlock Text="بعد خصم التكلفة والتخفيض" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Card 3: Month Sales -->
+                <Border Grid.Column="2" Style="{StaticResource KpiCard}">
+                    <StackPanel>
+                        <TextBlock Text="مبيعات الشهر الحالي" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding MonthSales, StringFormat='{}{0:N2} دج'}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource PrimaryDarkBrush}" Margin="0,6,0,0"/>
+                        <TextBlock Text="إجمالي مداخيل الشهر" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Card 4: Inventory Cost Value -->
+                <Border Grid.Column="3" Style="{StaticResource KpiCard}">
+                    <StackPanel>
+                        <TextBlock Text="قيمة المخزون الإجمالية (شراء)" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding InventoryCost, StringFormat='{}{0:N2} دج'}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" Margin="0,6,0,0"/>
+                        <TextBlock Text="{Binding InventoryRetail, StringFormat='{}بسعر البيع: {0:N2} دج'}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Row 2: Secondary KPIs (Debts and Stock Alerts) -->
+            <Grid Grid.Row="1" Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Customer Debts -->
+                <Border Grid.Column="0" Style="{StaticResource KpiCard}">
+                    <StackPanel>
+                        <TextBlock Text="ديون الزبائن (لنا)" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding TotalCustomerDebts, StringFormat='{}{0:N2} دج'}" FontSize="20" FontWeight="Bold" Foreground="#D97706" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Supplier Debts -->
+                <Border Grid.Column="1" Style="{StaticResource KpiCard}">
+                    <StackPanel>
+                        <TextBlock Text="ديون الموردين (علينا)" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding TotalSupplierDebts, StringFormat='{}{0:N2} دج'}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource DangerBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Low Stock Alert -->
+                <Border Grid.Column="2" Style="{StaticResource KpiCard}" BorderBrush="{StaticResource DangerBrush}">
+                    <StackPanel>
+                        <TextBlock Text="منتجات قريبة من النفاد" FontSize="13" Foreground="{StaticResource DangerBrush}" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding LowStockCount, StringFormat='{}{0} منتج'}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource DangerBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Row 3: Top Selling Products and 7-Day Trend -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Top Selling Products List -->
+                <Border Grid.Column="0" Style="{StaticResource CardPanel}" Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="🏆 الأكثر مبيعاً" FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+                        <DataGrid ItemsSource="{Binding TopProducts}" Height="280">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="المنتج" Binding="{Binding ProductName}" Width="*"/>
+                                <DataGridTextColumn Header="الكمية المباعة" Binding="{Binding TotalQuantitySold, StringFormat='{}{0:N0}'}" Width="100"/>
+                                <DataGridTextColumn Header="إجمالي الإيراد" Binding="{Binding TotalRevenue, StringFormat='{}{0:N2} دج'}" Width="130"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Last 7 Days Daily Summary -->
+                <Border Grid.Column="1" Style="{StaticResource CardPanel}" Margin="8,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="📈 حركة الأيام الأخيرة (المبيعات والأرباح)" FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+                        <DataGrid ItemsSource="{Binding SalesTrend}" Height="280">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="التاريخ" Binding="{Binding DateLabel}" Width="100"/>
+                                <DataGridTextColumn Header="المبيعات" Binding="{Binding SalesAmount, StringFormat='{}{0:N2} دج'}" Width="*"/>
+                                <DataGridTextColumn Header="الأرباح الصافية" Binding="{Binding ProfitAmount, StringFormat='{}{0:N2} دج'}" Width="130"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

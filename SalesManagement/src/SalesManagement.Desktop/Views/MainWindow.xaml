@@ -1,0 +1,135 @@
+<Window x:Class="SalesManagement.Desktop.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:SalesManagement.Desktop.Views"
+        xmlns:vm="clr-namespace:SalesManagement.Desktop.ViewModels"
+        Title="تاجر برو (Taajer PRO) - نظام إدارة المبيعات ونقاط البيع والمخزون"
+        Height="850" Width="1300"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        FlowDirection="RightToLeft"
+        Icon="../app_icon.ico"
+        Background="{StaticResource BackgroundBrush}">
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <views:DashboardView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:PosViewModel}">
+            <views:PosView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
+            <views:ProductsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SalesHistoryViewModel}">
+            <views:SalesHistoryView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CustomersViewModel}">
+            <views:CustomersView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SuppliersViewModel}">
+            <views:SuppliersView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CashRegisterViewModel}">
+            <views:CashRegisterView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ExpensesViewModel}">
+            <views:ExpensesView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+            <views:SettingsView/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"/> <!-- Sidebar Navigation -->
+            <ColumnDefinition Width="*"/>   <!-- Main Workspace Area -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar Navigation -->
+        <Border Grid.Column="0" Background="{StaticResource PrimaryDarkBrush}" Padding="16">
+            <DockPanel>
+                <!-- Brand Title -->
+                <StackPanel DockPanel.Dock="Top" Margin="0,10,0,24">
+                    <TextBlock Text="💼 تاجر برو | Taajer PRO" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                    <TextBlock Text="إدارة المبيعات ونقاط البيع والمخزون" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    <Separator Margin="0,16,0,0" Background="#334155"/>
+                </StackPanel>
+
+                <!-- User Session Footer -->
+                <Border DockPanel.Dock="Bottom" Background="#1E293B" CornerRadius="8" Padding="12" Margin="0,16,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="{Binding CurrentUser.FullName}" Foreground="White" FontWeight="Bold" FontSize="13"/>
+                            <TextBlock Text="{Binding CurrentUser.RoleName}" Foreground="#38BDF8" FontSize="11"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="خروج" Click="LogoutButton_Click" Background="#EF4444" Foreground="White" Padding="8,4" BorderThickness="0" Cursor="Hand"/>
+                    </Grid>
+                </Border>
+
+                <!-- Navigation Links -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <RadioButton Style="{StaticResource NavButton}" Content="📊  لوحة القيادة والمؤشرات" IsChecked="True" Command="{Binding NavigateDashboardCommand}"/>
+                        <RadioButton Style="{StaticResource NavButton}" Content="⚡  نقطة البيع (POS الكاشير)" Command="{Binding NavigatePosCommand}"/>
+                        <RadioButton Style="{StaticResource NavButton}" Content="📦  المخزون والمنتجات" Command="{Binding NavigateProductsCommand}"/>
+                        <RadioButton Style="{StaticResource NavButton}" Content="🧾  سجل الفواتير والمبيعات" Command="{Binding NavigateSalesHistoryCommand}"/>
+                        <RadioButton Style="{StaticResource NavButton}" Content="👥  الزبائن والديون (الكريدي)" Command="{Binding NavigateCustomersCommand}"/>
+                        <RadioButton Style="{StaticResource NavButton}" Content="🚛  الموردين والمشتريات" Command="{Binding NavigateSuppliersCommand}"/>
+                        <RadioButton Style="{StaticResource NavButton}" Content="💰  الصندوق واليومية (Z-Report)" Command="{Binding NavigateCashRegisterCommand}"/>
+                        <RadioButton Style="{StaticResource NavButton}" Content="💸  المصاريف والنفقات اليومية" Command="{Binding NavigateExpensesCommand}"/>
+                        <RadioButton Style="{StaticResource NavButton}" Content="⚙️  الإعدادات والنسخ الاحتياطي" Command="{Binding NavigateSettingsCommand}"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- Main Workspace Area -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="64"/> <!-- Top Bar Header -->
+                <RowDefinition Width="*"/>   <!-- Dynamic Content Screen -->
+                <RowDefinition Height="32"/> <!-- Status Bar -->
+            </Grid.RowDefinitions>
+
+            <!-- Top Header Bar -->
+            <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="24,0">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="{Binding CurrentTitle}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource PrimaryDarkBrush}" VerticalAlignment="Center"/>
+
+                    <!-- Offline Status Badge -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Background="#DCFCE7" CornerRadius="12" Padding="12,6" Margin="0,0,12,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="8" Height="8" Fill="{StaticResource SuccessBrush}" Margin="0,0,6,0"/>
+                                <TextBlock Text="وضع غير متصل (MySQL Localhost)" FontSize="12" FontWeight="SemiBold" Foreground="#166534"/>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Text="العملة: دج (DZD)" Foreground="{StaticResource TextSecondaryBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Dynamic Active Screen Content -->
+            <ContentControl Grid.Row="1" Content="{Binding CurrentView}" Margin="20"/>
+
+            <!-- Status Bar -->
+            <Border Grid.Row="2" Background="#F1F5F9" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="16,0">
+                <Grid VerticalAlignment="Center">
+                    <TextBlock Text="{Binding CurrentView.StatusMessage}" FontSize="12" Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center"/>
+                    <TextBlock Text="تاجر برو (Taajer PRO) v1.0.0 | نظام مكتبي محلي يعمل دون إنترنت" HorizontalAlignment="Left" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
