@@ -1,0 +1,163 @@
+<UserControl x:Class="SalesManagement.Desktop.Views.PosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="750" d:DesignWidth="1100"
+             Focusable="True"
+             KeyDown="UserControl_KeyDown"
+             Loaded="UserControl_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>   <!-- Cart & Items (Left 65%) -->
+            <ColumnDefinition Width="380"/> <!-- Payment & Settlement (Right 35%) -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Column: Search & Cart Table -->
+        <Grid Grid.Column="0" Margin="0,0,16,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <!-- Barcode & Search Input -->
+                <RowDefinition Height="*"/>    <!-- Cart Grid -->
+                <RowDefinition Height="Auto"/> <!-- Quick Action Buttons -->
+            </Grid.RowDefinitions>
+
+            <!-- Top Search / Barcode Area -->
+            <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,12" Padding="12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="🔍 قارئ الباركود (F2):" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                    <TextBox Grid.Column="1" x:Name="TxtBarcode" Text="{Binding BarcodeInput, UpdateSourceTrigger=PropertyChanged}"
+                             KeyDown="TxtBarcode_KeyDown"
+                             FontSize="16" FontWeight="SemiBold" Height="42" Margin="0,0,12,0"/>
+
+                    <!-- Search by name query -->
+                    <TextBox Grid.Column="2" Text="{Binding SearchProductQuery, UpdateSourceTrigger=PropertyChanged}"
+                             Height="42" FontSize="14"
+                             ToolTip="ابحث بالاسم أو اختر من القائمة..."/>
+                </Grid>
+            </Border>
+
+            <!-- Center: Cart DataGrid -->
+            <Border Grid.Row="1" Style="{StaticResource CardPanel}" Padding="0">
+                <DataGrid ItemsSource="{Binding CartItems}"
+                          SelectedItem="{Binding SelectedCartItem}"
+                          FontSize="14"
+                          RowHeight="44">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="الباركود" Binding="{Binding Barcode}" Width="130"/>
+                        <DataGridTextColumn Header="اسم المنتج" Binding="{Binding ProductName}" Width="*"/>
+                        <DataGridTextColumn Header="السعر الفردي" Binding="{Binding UnitPrice, StringFormat='{}{0:N2} دج'}" Width="110"/>
+                        <DataGridTextColumn Header="الكمية" Binding="{Binding Quantity, StringFormat='{}{0:N2}'}" Width="80"/>
+                        <DataGridTextColumn Header="التخفيض" Binding="{Binding Discount, StringFormat='{}{0:N2} دج'}" Width="90"/>
+                        <DataGridTextColumn Header="الإجمالي" Binding="{Binding TotalLine, StringFormat='{}{0:N2} دج'}" Width="120"/>
+                        <DataGridTextColumn Header="المتوفر" Binding="{Binding AvailableStock, StringFormat='{}{0:N0}'}" Width="70"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Bottom Cart Actions -->
+            <Grid Grid.Row="2" Margin="0,12,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Content="➕ زيادة الكمية (+)" Command="{Binding IncreaseQuantityCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0"/>
+                <Button Grid.Column="1" Content="➖ إنقاص الكمية (-)" Command="{Binding DecreaseQuantityCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0"/>
+                <Button Grid.Column="2" Content="❌ حذف السطر (Del)" Command="{Binding RemoveSelectedCartItemCommand}" Style="{StaticResource DangerButton}" Margin="0,0,8,0"/>
+
+                <Button Grid.Column="4" Content="⏸ تعليق السلة (F4)" Command="{Binding ParkCartCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0"/>
+                <Button Grid.Column="5" Content="▶ استرجاع (F6)" Command="{Binding RecallCartCommand}" Style="{StaticResource PrimaryButton}"/>
+            </Grid>
+        </Grid>
+
+        <!-- Right Column: Checkout & Payment Summary -->
+        <Border Grid.Column="1" Style="{StaticResource CardPanel}" Background="White">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <!-- Customer Selector -->
+                    <TextBlock Text="الزبون:" FontWeight="Bold" Margin="0,0,0,6"/>
+                    <ComboBox ItemsSource="{Binding CustomersList}" SelectedItem="{Binding SelectedCustomer}" DisplayMemberPath="Name" Height="40" Margin="0,0,0,16"/>
+
+                    <!-- Big Total Display -->
+                    <Border Background="#F1F5F9" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="المبلغ الصافي للدفع" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding TotalAmount, StringFormat='{}{0:N2} دج'}" FontSize="32" FontWeight="ExtraBold" Foreground="{StaticResource PrimaryBrush}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                            <TextBlock Text="{Binding Subtotal, StringFormat='{}المجموع الجزئي: {0:N2} دج'}" FontSize="12" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Invoice Discount -->
+                    <TextBlock Text="تخفيض إضافي على الفاتورة (F8):" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding InvoiceDiscount, UpdateSourceTrigger=PropertyChanged}" Height="38" Margin="0,0,0,16"/>
+
+                    <!-- Payment Method -->
+                    <TextBlock Text="طريقة الدفع (F9):" FontWeight="Bold" Margin="0,0,0,6"/>
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <RadioButton Grid.Column="0" Content="نقداً" IsChecked="True" Style="{StaticResource NavButton}" Foreground="{StaticResource TextPrimaryBrush}" Height="36"/>
+                        <RadioButton Grid.Column="1" Content="بطاقة / CIB" Style="{StaticResource NavButton}" Foreground="{StaticResource TextPrimaryBrush}" Height="36"/>
+                        <RadioButton Grid.Column="2" Content="كريدي (دين)" Style="{StaticResource NavButton}" Foreground="{StaticResource TextPrimaryBrush}" Height="36"/>
+                    </Grid>
+
+                    <!-- Cash Drawer Input -->
+                    <TextBlock Text="المبلغ المستلم من الزبون (دج):" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtReceived" Text="{Binding ReceivedCash, UpdateSourceTrigger=PropertyChanged}" Height="40" FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                    <!-- Live Change Calculation (الصرف) -->
+                    <Border Background="#ECFDF5" BorderBrush="#A7F3D0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="المبلغ المتبقي للزبون (الصرف):" FontWeight="Bold" Foreground="#047857" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding ChangeAmount, StringFormat='{}{0:N2} دج'}" FontSize="18" FontWeight="Bold" Foreground="#047857"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Remaining Debt Notice if any -->
+                    <Border Background="#FFFBEB" BorderBrush="#FDE68A" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,16"
+                            Visibility="{Binding RemainingDebt, Converter={x:Null}}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="المتبقي كدين (كريدي):" FontWeight="Bold" Foreground="#B45309" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding RemainingDebt, StringFormat='{}{0:N2} دج'}" FontSize="16" FontWeight="Bold" Foreground="#B45309"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Big Checkout & Print Button (F12) -->
+                    <Button Content="تأكيد الدفع والطباعة (F12)"
+                            Command="{Binding CheckoutAndPrintCommand}"
+                            Style="{StaticResource SuccessButton}"
+                            Height="56" FontSize="18" Margin="0,0,0,12"/>
+
+                    <!-- Clear / Cancel Button (Esc) -->
+                    <Button Content="إلغاء ومسح الفاتورة (Esc)"
+                            Command="{Binding ClearCartCommand}"
+                            Style="{StaticResource DangerButton}"
+                            Height="40"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,28 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Brand & System -->
+    <system:String x:Key="Str_AppName">Taajer PRO</system:String>
+    <system:String x:Key="Str_AppTagline">Gestion des Ventes, Caisse et Stock</system:String>
+    <system:String x:Key="Str_Currency">DZD</system:String>
+
+    <!-- Navigation -->
+    <system:String x:Key="Nav_Dashboard">Tableau de bord</system:String>
+    <system:String x:Key="Nav_POS">Point de Vente (Caisse)</system:String>
+    <system:String x:Key="Nav_Products">Gestion des Stocks et Articles</system:String>
+    <system:String x:Key="Nav_Sales">Historique des Ventes</system:String>
+    <system:String x:Key="Nav_Customers">Clients et Créances</system:String>
+    <system:String x:Key="Nav_Suppliers">Fournisseurs et Achats</system:String>
+    <system:String x:Key="Nav_CashRegister">Caisse et Clôture (Z-Report)</system:String>
+    <system:String x:Key="Nav_Expenses">Dépenses et Frais Journaliers</system:String>
+    <system:String x:Key="Nav_Settings">Paramètres et Sauvegarde</system:String>
+
+    <!-- Common Actions -->
+    <system:String x:Key="Btn_Save">Enregistrer</system:String>
+    <system:String x:Key="Btn_Cancel">Annuler</system:String>
+    <system:String x:Key="Btn_Delete">Supprimer</system:String>
+    <system:String x:Key="Btn_Print">Imprimer</system:String>
+    <system:String x:Key="Btn_Search">Rechercher</system:String>
+    <system:String x:Key="Btn_Refresh">Actualiser</system:String>
+</ResourceDictionary>

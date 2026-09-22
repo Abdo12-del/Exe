@@ -1,0 +1,78 @@
+<UserControl x:Class="SalesManagement.Desktop.Views.SalesHistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1100">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Date Filter Bar -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,12" Padding="12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="من تاريخ:" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <DatePicker Grid.Column="1" SelectedDate="{Binding FromDate}"/>
+
+                <TextBlock Grid.Column="2" Text="إلى تاريخ:" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,8,0"/>
+                <DatePicker Grid.Column="3" SelectedDate="{Binding ToDate}"/>
+
+                <Button Grid.Column="4" Content="🔍 بحث" Command="{Binding SearchCommand}" Style="{StaticResource PrimaryButton}" Margin="12,0,0,0"/>
+
+                <StackPanel Grid.Column="6" Orientation="Horizontal">
+                    <Button Content="🖨️ إعادة طباعة الوصل" Command="{Binding ReprintReceiptCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0"/>
+                    <Button Content="↩ إرجاع الفاتورة المحددة" Command="{Binding ReturnSaleCommand}" Style="{StaticResource DangerButton}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Sales Invoices Grid -->
+        <Border Grid.Row="1" Style="{StaticResource CardPanel}" Padding="0" Margin="0,0,0,12">
+            <DataGrid ItemsSource="{Binding Sales}" SelectedItem="{Binding SelectedSale}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="رقم الفاتورة" Binding="{Binding InvoiceNumber}" Width="160"/>
+                    <DataGridTextColumn Header="التاريخ والوقت" Binding="{Binding Timestamp, StringFormat='{}{0:yyyy-MM-dd HH:mm}'}" Width="150"/>
+                    <DataGridTextColumn Header="الزبون" Binding="{Binding CustomerName}" Width="*"/>
+                    <DataGridTextColumn Header="المجموع الكلي" Binding="{Binding TotalAmount, StringFormat='{}{0:N2} دج'}" Width="130"/>
+                    <DataGridTextColumn Header="المسدد" Binding="{Binding PaidAmount, StringFormat='{}{0:N2} دج'}" Width="120"/>
+                    <DataGridTextColumn Header="المتبقي (دين)" Binding="{Binding RemainingDebt, StringFormat='{}{0:N2} دج'}" Width="120"/>
+                    <DataGridTextColumn Header="حالة الدفع" Binding="{Binding PaymentStatus}" Width="110"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Selected Sale Items Detail View -->
+        <Border Grid.Row="2" Style="{StaticResource CardPanel}" Padding="12" Height="180">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="📦 تفاصيل أصناف الفاتورة المحددة:" FontWeight="Bold" Margin="0,0,0,8"/>
+                <DataGrid Grid.Row="1" ItemsSource="{Binding SelectedSale.Items}" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="المنتج" Binding="{Binding ProductName}" Width="*"/>
+                        <DataGridTextColumn Header="الكمية" Binding="{Binding Quantity, StringFormat='{}{0:N0}'}" Width="100"/>
+                        <DataGridTextColumn Header="سعر البيع" Binding="{Binding UnitSalePrice, StringFormat='{}{0:N2} دج'}" Width="120"/>
+                        <DataGridTextColumn Header="التخفيض" Binding="{Binding DiscountAmount, StringFormat='{}{0:N2} دج'}" Width="100"/>
+                        <DataGridTextColumn Header="المجموع الصافي" Binding="{Binding TotalLineAmount, StringFormat='{}{0:N2} دج'}" Width="130"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

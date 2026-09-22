@@ -1,0 +1,151 @@
+<UserControl x:Class="SalesManagement.Desktop.Views.CashRegisterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1100">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="420"/> <!-- Operations Panel -->
+            <ColumnDefinition Width="*"/>   <!-- Z-Report Display Panel -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Operations Panel -->
+        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,16,0">
+            <StackPanel>
+                <!-- Current Drawer Status Card -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="حالة الصندوق الحالي" FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="الرصيد النقدي الحالي:" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding CurrentBalance, StringFormat='{}{0:N2} دج'}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
+                        </Grid>
+                        <TextBlock Text="{Binding IsOpen, StringFormat='{}الحالة: {0}'}" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Open Register Section -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="فتح الصندوق (بداية الوردية / اليومية)" FontSize="15" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="رصيد البداية (Fond de Caisse):" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding OpeningFloatInput, UpdateSourceTrigger=PropertyChanged}" Height="38" Margin="0,0,0,10"/>
+                        <Button Content="🔓 فتح الصندوق" Command="{Binding OpenRegisterCommand}" Style="{StaticResource PrimaryButton}" Height="40"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Cash In / Out (Deposits & Petty Expenses) -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="حركات نقدية يدوية" FontSize="15" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                        <TextBlock Text="إيداع نقدي (تغذية الصندوق):" Margin="0,0,0,4"/>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Text="{Binding CashInAmount, UpdateSourceTrigger=PropertyChanged}" Height="38"/>
+                            <Button Grid.Column="1" Content="➕ إيداع" Command="{Binding CashInCommand}" Style="{StaticResource SuccessButton}" Height="38" Margin="8,0,0,0"/>
+                        </Grid>
+
+                        <TextBlock Text="سحب نقدي (مصاريف نثرية):" Margin="0,0,0,4"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Text="{Binding CashOutAmount, UpdateSourceTrigger=PropertyChanged}" Height="38"/>
+                            <Button Grid.Column="1" Content="➖ سحب" Command="{Binding CashOutCommand}" Style="{StaticResource DangerButton}" Height="38" Margin="8,0,0,0"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Close Register Section -->
+                <Border Style="{StaticResource CardPanel}">
+                    <StackPanel>
+                        <TextBlock Text="إغلاق الصندوق وإصدار تقرير Z" FontSize="15" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="المبلغ الفعلي المحسوب في الدرج (دج):" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding ActualCashCounted, UpdateSourceTrigger=PropertyChanged}" Height="40" FontSize="16" FontWeight="Bold" Margin="0,0,10,0"/>
+                        <Button Content="🔒 إغلاق وطباعة Z-Report" Command="{Binding CloseRegisterCommand}" Style="{StaticResource DangerButton}" Height="45"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Z-Report Display Panel -->
+        <Border Grid.Column="1" Style="{StaticResource CardPanel}" Background="White">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="16">
+                    <TextBlock Text="📋 تقرير إغلاق اليومية (Z-Report)" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="المطابقة المحاسبية وجرد الخزينة" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,24"/>
+
+                    <Border Background="#F8FAFC" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Text="رصيد البداية (Fond de Caisse):" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LastZReport.OpeningFloat, StringFormat='{}{0:N2} دج'}" HorizontalAlignment="Left" FontWeight="Bold"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Text="مبيعات نقدية (Espèces):" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LastZReport.TotalCashSales, StringFormat='{}{0:N2} دج'}" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Text="مبيعات بالكريدي (دين):" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LastZReport.TotalCreditSales, StringFormat='{}{0:N2} دج'}" HorizontalAlignment="Left" FontWeight="Bold" Foreground="#D97706"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Text="تسديدات ديون الزبائن المحصلة نقداً:" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LastZReport.CustomerDebtCollections, StringFormat='{}{0:N2} دج'}" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Text="مدفوعات ديون الموردين نقداً:" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LastZReport.SupplierDebtPayments, StringFormat='{}{0:N2} دج'}" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{StaticResource DangerBrush}"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,16">
+                                <TextBlock Text="المصاريف النثرية المدفوعة نقداً:" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LastZReport.CashExpenses, StringFormat='{}{0:N2} دج'}" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{StaticResource DangerBrush}"/>
+                            </Grid>
+
+                            <Separator Margin="0,0,0,16"/>
+
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Text="الرصيد النظري المتوقع في الصندوق:" FontWeight="Bold" FontSize="15"/>
+                                <TextBlock Text="{Binding LastZReport.ExpectedCashInDrawer, StringFormat='{}{0:N2} دج'}" HorizontalAlignment="Left" FontWeight="Bold" FontSize="16" Foreground="{StaticResource PrimaryBrush}"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Text="المبلغ الفعلي المدخل عند الإغلاق:" FontWeight="Bold" FontSize="15"/>
+                                <TextBlock Text="{Binding LastZReport.ActualCashCounted, StringFormat='{}{0:N2} دج'}" HorizontalAlignment="Left" FontWeight="Bold" FontSize="16"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,16">
+                                <TextBlock Text="الفارق في الصندوق (عجز / فائض):" FontWeight="Bold" FontSize="16"/>
+                                <TextBlock Text="{Binding LastZReport.CashDifference, StringFormat='{}{0:N2} دج'}" HorizontalAlignment="Left" FontWeight="ExtraBold" FontSize="18" Foreground="{StaticResource DangerBrush}"/>
+                            </Grid>
+
+                            <Separator Margin="0,0,0,16"/>
+
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Text="إجمالي عدد الفواتير:" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LastZReport.TotalInvoicesCount}" HorizontalAlignment="Left"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Text="إجمالي رقم الأعمال (Chiffre d'affaires):" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LastZReport.TotalRevenue, StringFormat='{}{0:N2} دج'}" HorizontalAlignment="Left" FontWeight="Bold"/>
+                            </Grid>
+                            <Grid>
+                                <TextBlock Text="صافي أرباح الوردية:" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LastZReport.TotalNetProfit, StringFormat='{}{0:N2} دج'}" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>
