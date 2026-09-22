@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using SalesManagement.Application.DTOs;
 using SalesManagement.Application.Interfaces;
-using SalesManagement.Domain.Enums;
 using SalesManagement.Domain.Exceptions;
 
 namespace SalesManagement.Desktop.ViewModels;
@@ -13,8 +12,7 @@ public class ExpensesViewModel : ViewModelBase
 
     private ExpenseCategoryDto? _selectedCategory;
     private decimal _amount;
-    private PaymentMethod _paymentMethod = PaymentMethod.Cash;
-    private string _beneficiary = string.Empty;
+    private string _title = string.Empty;
     private string _notes = string.Empty;
 
     public ObservableCollection<ExpenseCategoryDto> Categories { get; } = new();
@@ -32,16 +30,10 @@ public class ExpensesViewModel : ViewModelBase
         set => SetProperty(ref _amount, value);
     }
 
-    public PaymentMethod PaymentMethod
+    public string Title
     {
-        get => _paymentMethod;
-        set => SetProperty(ref _paymentMethod, value);
-    }
-
-    public string Beneficiary
-    {
-        get => _beneficiary;
-        set => SetProperty(ref _beneficiary, value);
+        get => _title;
+        set => SetProperty(ref _title, value);
     }
 
     public string Notes
@@ -113,10 +105,9 @@ public class ExpensesViewModel : ViewModelBase
             var dto = new CreateExpenseDto(
                 SelectedCategory.Id,
                 Amount,
-                PaymentMethod,
-                1, // CashRegisterId (if cash)
+                1, // CashRegisterId (deduct from register)
                 1, // UserId
-                Beneficiary,
+                Title,
                 Notes
             );
 
@@ -124,7 +115,7 @@ public class ExpensesViewModel : ViewModelBase
             StatusMessage = $"تم تسجيل المصروف بقيمة {Amount:N2} دج وخصمه من الصندوق بنجاح.";
 
             Amount = 0;
-            Beneficiary = string.Empty;
+            Title = string.Empty;
             Notes = string.Empty;
 
             await LoadDataAsync();

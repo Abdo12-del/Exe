@@ -57,10 +57,10 @@ public class InventoryCountService : IInventoryCountService
             {
                 CountNumber = countNum,
                 WarehouseId = dto.WarehouseId,
-                CreatedByUserId = dto.UserId,
-                CreatedAt = DateTime.UtcNow,
+                UserId = dto.UserId,
+                StartDate = DateTime.UtcNow,
                 Status = InventoryCountStatus.Completed,
-                CompletedAt = DateTime.UtcNow,
+                CompletedDate = DateTime.UtcNow,
                 Notes = dto.Notes
             };
 
@@ -82,9 +82,11 @@ public class InventoryCountService : IInventoryCountService
                 {
                     InventoryCountId = invCount.Id,
                     ProductId = item.ProductId,
-                    TheoreticalQuantity = wp.CurrentQuantity,
-                    PhysicalQuantity = item.CountedQuantity,
+                    SystemQuantity = wp.CurrentQuantity,
+                    ActualQuantity = item.CountedQuantity,
                     Difference = diff,
+                    UnitCost = 0,
+                    DifferenceValue = 0,
                     Notes = diff != 0 ? $"تسوية جردية: فارق {diff:+0.##;-0.##;0}" : "مطابق"
                 });
 

@@ -48,7 +48,7 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="المستفيد" Binding="{Binding Beneficiary}" Width="130"/>
+                        <DataGridTextColumn Header="البيان" Binding="{Binding Title}" Width="180"/>
                         <DataGridTextColumn Header="ملاحظات" Binding="{Binding Notes}" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
@@ -67,10 +67,10 @@
                     <TextBlock Text="المبلغ (دج):" FontWeight="SemiBold" Margin="0,0,0,4"/>
                     <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" Height="40" FontSize="16" FontWeight="Bold" Margin="0,0,14,0"/>
 
-                    <TextBlock Text="المستفيد (الشخص / الجهة):" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                    <TextBox Text="{Binding Beneficiary, UpdateSourceTrigger=PropertyChanged}" Height="38" Margin="0,0,14,0"/>
+                    <TextBlock Text="البيان / المستفيد:" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Height="38" Margin="0,0,14,0"/>
 
-                    <TextBlock Text="البيان والملاحظات:" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBlock Text="ملاحظات:" FontWeight="SemiBold" Margin="0,0,0,4"/>
                     <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" Height="60" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,20,0"/>
 
                     <Button Content="💸 تسجيل المصروف وخصمه من الصندوق" Command="{Binding SaveExpenseCommand}" Style="{StaticResource DangerButton}" Height="48" FontSize="15"/>
