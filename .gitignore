@@ -42,3 +42,8 @@ media/out/*
 *.mp4
 *.mov
 *.mkv
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*.pyc

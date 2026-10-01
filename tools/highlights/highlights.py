@@ -317,8 +317,10 @@ def analyze_video(path: Path, sample_fps: float = 3.0, work_w: int = 192,
     if detect_scenes:
         if verbose:
             print("   ▸ كشف تغيّرات المشاهد …", flush=True)
+        # للفيديوهات الطويلة نقلّل معدّل العينات لتسريع الكشف
+        scene_fps = 10.0 if va.duration <= 1800 else 5.0
         scmd = [FFMPEG, "-hide_banner", "-i", str(path), "-an", "-sn",
-                "-vf", "fps=10,select='gt(scene,0.30)',showinfo", "-f", "null", "-"]
+                "-vf", f"fps={scene_fps},select='gt(scene,0.30)',showinfo", "-f", "null", "-"]
         p4 = subprocess.run(scmd, capture_output=True, text=True)
         va.scenes = [float(m) for m in re.findall(r"pts_time:(\d+\.?\d*)", p4.stderr)]
     return va
@@ -463,7 +465,8 @@ class Clip:
 
 def pick_clips(va: VideoAnalysis, top: int, length: float, step: float,
                min_len: float, max_len: float, weights: Dict[str, float],
-               min_gap: float, verbose: bool = True) -> List[Clip]:
+               min_gap: float, min_score: Optional[float] = None,
+               verbose: bool = True) -> List[Clip]:
     cands = build_candidates(va, length, step, min_len, max_len)
     if verbose:
         print(f"   ▸ تقييم {len(cands)} نافذة مرشحة …", flush=True)
@@ -481,6 +484,8 @@ def pick_clips(va: VideoAnalysis, top: int, length: float, step: float,
     for s, i, parts in scored:
         if len(selected) >= top:
             break
+        if min_score is not None and s < min_score:
+            break  # بقية المرشحين أقل درجة (القائمة مرتّبة تنازلياً)
         a, b = cands[i]
         # منع التداخل والقرب الشديد
         if any(not (b + min_gap <= c.start or a >= c.end + min_gap) for c in selected):
@@ -879,6 +884,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--max-len", type=float, default=35.0, help="أقصى طول مسموح")
     ap.add_argument("--step", type=float, default=1.0, help="خطوة انزلاق نافذة البحث بالثواني")
     ap.add_argument("--min-gap", type=float, default=4.0, help="أدنى فاصل زمني بين مقطعين مختارين")
+    ap.add_argument("--min-score", type=float, default=None,
+                    help="تجاهل أي مقطع تقل درجته عن هذه القيمة (مثلاً 0 = اللحظات الجيدة فقط)")
     ap.add_argument("--aspect", default="keep", choices=["keep", "9:16", "1:1", "16:9"], help="نسبة الأبعاد")
     ap.add_argument("--height", type=int, default=1920, help="ارتفاع الإخراج (يُستخدم مع 9:16/1:1/16:9)")
     ap.add_argument("--fill", default="crop", choices=["crop", "blur", "pad"], help="طريقة تعبئة الإطار")
@@ -926,7 +933,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(f"   ▸ المدة {fmt_ts(va.duration)} | {va.width}x{va.height} | "
                   f"صوت: {'نعم' if va.has_audio else 'لا'} | مشاهد: {len(va.scenes)}", flush=True)
         clips = pick_clips(va, args.top, args.len, args.step, args.min_len, args.max_len,
-                           args.weights, args.min_gap, verbose=verbose)
+                           args.weights, args.min_gap, args.min_score, verbose)
         all_clips.extend(clips)
         for c in clips:
             print(f"   ✔ #{c.rank}  {fmt_ts(c.start)} → {fmt_ts(c.end)}  ({c.end - c.start:.1f}s)  "
