@@ -85,3 +85,17 @@
 dist\TaajerPRO_Setup_v1.0.0.exe
 ```
 الذي يثبت النظام مع قاعدة البيانات المتنقلة والهوية البصرية وشعار تاجر برو بضغطة زر واحدة!
+
+---
+
+## 🎬 أداة المونتاج الآلي (اختيار أفضل المقاطع)
+
+يحتوي المستودع على أداة سطر أوامر لتحليل الفيديوهات واستخراج أفضل اللحظات الجاهزة للنشر
+(Reels / TikTok / Shorts) مع تقارير وصور مصغّرة:
+
+```bash
+bash tools/highlights/setup.sh
+~/.venv-video/bin/python tools/highlights/highlights.py -i media/in -o media/out --top 5 --len 20 --aspect 9:16
+```
+
+التفاصيل الكاملة في: [`tools/highlights/README.md`](tools/highlights/README.md)

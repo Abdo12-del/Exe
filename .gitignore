@@ -33,3 +33,12 @@ node_modules/
 *.o
 *.obj
 taseer_data.json
+
+# Video montage workspace (highlight tool)
+media/in/*
+!media/in/.gitkeep
+media/out/*
+!media/out/.gitkeep
+*.mp4
+*.mov
+*.mkv
