@@ -748,6 +748,28 @@ def make_reel(clips: List[Clip], out_dir: Path) -> Optional[Path]:
 # التقارير
 # --------------------------------------------------------------------------------------
 
+def emit_cut_scripts(js: Path, args: argparse.Namespace) -> None:
+    """يولّد سكربت قصّ (Windows/Linux) ليقصّ المستخدم نفس اللحظات من الفيديو الأصلي كامل الجودة."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import make_cut_script as mcs  # type: ignore
+        clips = mcs.load_clips(js)
+        if not clips:
+            return
+        vf = mcs.build_vf(args.aspect, args.height, args.fill, args.fps, 0.0)
+        mcs.write_bat(js.parent / "cut_clips.bat", clips, vf, args.fade, args.crf,
+                      args.preset, not args.no_normalize, "clips")
+        mcs.write_sh(js.parent / "cut_clips.sh", clips, vf, args.fade, args.crf,
+                     args.preset, not args.no_normalize, "clips")
+        try:
+            (js.parent / "cut_clips.sh").chmod(0o755)
+        except Exception:
+            pass
+        print("   ✔ cut_clips.bat + cut_clips.sh  (لقصّ نفس اللحظات من الفيديو الأصلي بجودته الكاملة)")
+    except Exception as e:  # لا نُفشل التشغيل بسبب السكربت الإضافي
+        print(f"   ! تعذّر توليد سكربت القصّ: {e}")
+
+
 def fmt_ts(x: float) -> str:
     return f"{int(x // 60):02d}:{x % 60:05.2f}"
 
@@ -869,6 +891,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--subs", type=Path, default=None, help="ملف ترجمة .srt يُدمج في الفيديو")
     ap.add_argument("--reel", action="store_true", help="دمج المختارات في فيديو ملخّص واحد")
     ap.add_argument("--dry-run", action="store_true", help="تحليل واختيار فقط بدون تصدير")
+    ap.add_argument("--cut-script", action="store_true",
+                    help="توليد cut_clips.bat/.sh لقصّ نفس اللحظات من الفيديو الأصلي على جهازك (تلقائي مع --dry-run)")
     ap.add_argument("--no-faces", action="store_true", help="تعطيل كشف الوجوه (أسرع)")
     ap.add_argument("--no-scenes", action="store_true", help="تعطيل كشف تغيّر المشاهد (أسرع)")
     ap.add_argument("--sample-fps", type=float, default=3.0, help="معدّل أخذ العينات أثناء التحليل")
@@ -914,7 +938,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.dry_run:
         md, js = write_reports(all_clips, analyses, out_dir, args)
-        print(f"\n(وضع التحليل فقط) تم كتابة: {md.name}, {js.name}")
+        print(f"\n(وضع التحليل فقط) تم كتابة: {md.name}, {js.name}", flush=True)
+        emit_cut_scripts(js, args)
         return 0
 
     print("\n⚙  جارٍ التصدير …", flush=True)
@@ -937,6 +962,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(f"   ✔ {reel.name}  ({(reel.stat().st_size / (1024 * 1024)):.1f} م.ب)", flush=True)
 
     md, js = write_reports(all_clips, analyses, out_dir, args)
+    if args.cut_script:
+        emit_cut_scripts(js, args)
     print(f"\n✅ تم. المخرجات في: {out_dir}")
     print(f"   تقرير: {md.name} | بيانات: {js.name}")
     return 0
